@@ -272,7 +272,7 @@ export default function OrdersLog({ orders, isLoading }) {
                 <TableHead>Customer</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Payment</TableHead>
-                <TableHead>Method</TableHead> {/* Replaced 'Items' with 'Method' */}
+                <TableHead>Method</TableHead> {/* Replaced 'Items\' with 'Method' */}
                 <TableHead>Total</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
