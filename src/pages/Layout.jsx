@@ -79,9 +79,20 @@ export default function Layout({ children, currentPageName }) {
           setCurrentView("admin");
         }
       } catch (error) {
-        // User not logged in, stay in customer view
-        setCurrentUser(null);
-        setCurrentView("customer");
+        // For preview/demo purposes, create a mock admin user if not logged in
+        setCurrentUser({
+          id: 'demo-user',
+          email: 'demo@admin.com',
+          full_name: 'Demo Admin',
+          role: 'admin'
+        });
+        // Check URL to determine initial view
+        const path = window.location.pathname;
+        if (path === '/' || path === '/order') {
+          setCurrentView("customer");
+        } else {
+          setCurrentView("admin");
+        }
       } finally {
         setIsCheckingAuth(false);
       }

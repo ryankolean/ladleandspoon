@@ -62,29 +62,16 @@ function PagesContent() {
     
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Dashboard />} />
-                
-                
-                <Route path="/Dashboard" element={<Dashboard />} />
-                
-                <Route path="/Orders" element={<Orders />} />
-                
-                <Route path="/Menu" element={<Menu />} />
-                
-                <Route path="/Reports" element={<Reports />} />
-                
-                <Route path="/CustomerOrder" element={<CustomerOrder />} />
-                
-                <Route path="/OrderingSettings" element={<OrderingSettings />} />
-                
-                <Route path="/SMSManagement" element={<SMSManagement />} />
-                
-                <Route path="/CustomerSettings" element={<CustomerSettings />} />
-                
-                <Route path="/Profile" element={<Profile />} />
-                
+            <Routes>
+                <Route path="/" element={<CustomerOrder />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/settings" element={<OrderingSettings />} />
+                <Route path="/sms" element={<SMSManagement />} />
+                <Route path="/customer-settings" element={<CustomerSettings />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </Layout>
     );
