@@ -287,6 +287,7 @@ export default function CustomerOrder() {
       validateDeliveryAddress(addressData);
     } else {
       setInDeliveryZone(false);
+      setDeliveryDistance(null);
     }
   };
 
@@ -311,8 +312,12 @@ export default function CustomerOrder() {
         return;
       }
     } else { // Logged-in user
-      if ((!currentUser.phone && !phone) && !finalAddress?.formatted_address) { // Check if user has phone OR has typed one
-        alert("Please provide a phone number and delivery address.");
+      if (!currentUser?.phone && !phone) {
+        alert("Please provide a phone number.");
+        return;
+      }
+      if (!finalAddress?.formatted_address) {
+        alert("Please provide a delivery address.");
         return;
       }
     }
@@ -571,17 +576,31 @@ export default function CustomerOrder() {
                     </div>
                   )}
 
-                  {/* Phone Number Field: Show for guests OR signed-in users without a saved number (or if they want to change it) */}
-                  {(isGuest || !currentUser?.phone || (currentUser && phone !== currentUser.phone)) && (
+                  {/* Phone Number Field: Show for guests OR signed-in users */}
+                  {isGuest ? (
                     <div>
                       <Label>Phone Number *</Label>
                       <Input
                         type="tel"
-                        value={isGuest ? guestInfo.phone : phone}
-                        onChange={(e) => isGuest ? setGuestInfo({...guestInfo, phone: e.target.value}) : setPhone(e.target.value)}
+                        value={guestInfo.phone}
+                        onChange={(e) => setGuestInfo({...guestInfo, phone: e.target.value})}
                         placeholder="(555) 555-5555"
                         required
                       />
+                    </div>
+                  ) : currentUser && (
+                    <div>
+                      <Label>Phone Number *</Label>
+                      <Input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="(555) 555-5555"
+                        required
+                      />
+                      {currentUser.phone && phone === currentUser.phone && (
+                        <p className="text-xs text-gray-500 mt-1">Using your saved phone number</p>
+                      )}
                     </div>
                   )}
 
