@@ -50,8 +50,7 @@ export default function AddressAutocomplete({ onAddressChange, value, error }) {
     }
     
     const script = document.createElement('script');
-    // Update the hardcoded API key with the new value provided by the user.
-    const apiKey = "AIzaSyBAdrGqraTnDzwmYabx44snhbyyTsnuIRA";
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyBAdrGqraTnDzwmYabx44snhbyyTsnuIRA";
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
     script.async = true;
     script.defer = true;
