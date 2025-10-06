@@ -15,7 +15,6 @@ import { Plus, Minus, ShoppingCart, User as UserIcon, Mail, Phone, Coffee, LogIn
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import NewCustomerOnboarding from "../components/customer/NewCustomerOnboarding";
-import DeliveryAreaDialog from "../components/customer/DeliveryAreaDialog";
 import AddressAutocomplete from "../components/customer/AddressAutocomplete";
 import VenmoPayment from "../components/customer/VenmoPayment";
 import CashConfirmation from "../components/customer/CashConfirmation";
@@ -41,7 +40,6 @@ export default function CustomerOrder() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showDeliveryArea, setShowDeliveryArea] = useState(false);
   const [orderingWindow, setOrderingWindow] = useState(null);
   const [taxSettings, setTaxSettings] = useState({ is_tax_enabled: true, tax_percentage: 0.08, tax_display_name: "Tax" });
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -323,15 +321,7 @@ export default function CustomerOrder() {
       alert("Please select a valid address from the Google suggestions.");
       return;
     }
-    
-    if (!inDeliveryZone) {
-      if (deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES) {
-        alert(`Sorry, your delivery address is ${deliveryDistance.toFixed(1)} miles away. We only deliver within ${MAX_DELIVERY_DISTANCE_MILES} miles of ${STORE_ADDRESS}.`);
-      } else {
-        alert("Please confirm you are within the delivery area.");
-      }
-      return;
-    }
+
     if (cart.length === 0) {
       alert("Your cart is empty.");
       return;
@@ -526,8 +516,7 @@ export default function CustomerOrder() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
       <NewCustomerOnboarding open={showOnboarding} onClose={() => setShowOnboarding(false)} />
-      <DeliveryAreaDialog open={showDeliveryArea} onClose={() => setShowDeliveryArea(false)} />
-      
+
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-2">
@@ -822,48 +811,19 @@ export default function CustomerOrder() {
                           Calculating distance...
                         </div>
                       )}
-                      {!isCalculatingDistance && deliveryDistance !== null && (
-                        <div className={`text-sm font-medium ${deliveryDistance <= MAX_DELIVERY_DISTANCE_MILES ? 'text-green-600' : 'text-red-600'}`}>
-                          Distance from {STORE_ADDRESS}: {deliveryDistance.toFixed(1)} miles
-                          {deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
-                            <span className="block text-xs mt-1">
-                              (Maximum delivery distance is {MAX_DELIVERY_DISTANCE_MILES} miles)
-                            </span>
-                          )}
+                      {!isCalculatingDistance && deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
+                        <div className="text-sm font-medium text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                          <p className="font-semibold mb-1">⚠️ Outside Standard Delivery Radius</p>
+                          <p className="text-xs">
+                            Your address is {deliveryDistance.toFixed(1)} miles from our location. Your order will be pending until confirmed by Ladle & Spoon.
+                          </p>
                         </div>
                       )}
-
-                      {/* Delivery Zone Checkbox */}
-                      <div className="items-top flex space-x-2">
-                        <Checkbox
-                          id="delivery-zone"
-                          checked={inDeliveryZone}
-                          onCheckedChange={(checked) => {
-                            if (checked && deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES) {
-                              alert(`Sorry, your delivery address is ${deliveryDistance.toFixed(1)} miles away. We only deliver within ${MAX_DELIVERY_DISTANCE_MILES} miles.`);
-                              return;
-                            }
-                            setInDeliveryZone(checked);
-                          }}
-                          disabled={deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES}
-                        />
-                        <div className="grid gap-1.5 leading-none">
-                          <Label
-                            htmlFor="delivery-zone"
-                            className={`font-medium ${deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES ? 'text-gray-400' : ''}`}
-                          >
-                            I am within the delivery area.
-                          </Label>
-                          <Button variant="link" className="p-0 h-auto text-orange-600" onClick={() => setShowDeliveryArea(true)}>
-                            View Delivery Map
-                          </Button>
-                        </div>
-                      </div>
                     </div>
 
                     <Button
                       onClick={handleSubmitOrder}
-                      disabled={cart.length === 0 || isSubmitting || !paymentMethod || !inDeliveryZone || 
+                      disabled={cart.length === 0 || isSubmitting || !paymentMethod ||
                                 (isGuest && (!guestInfo.name || !guestInfo.email || !guestInfo.phone || !guestInfo.address?.formatted_address || guestInfo.address?.manual)) ||
                                 (!isGuest && ((!currentUser?.phone && !phone) || // No phone for logged-in user
                                               (deliveryAddressSource === 'saved' && !selectedAddressId) || // No saved address selected
