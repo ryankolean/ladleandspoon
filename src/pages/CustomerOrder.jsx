@@ -35,6 +35,8 @@ export default function CustomerOrder() {
   const [newAddress, setNewAddress] = useState(null); // Holds data for a newly entered address
 
   const [inDeliveryZone, setInDeliveryZone] = useState(false);
+  const [deliveryDistance, setDeliveryDistance] = useState(null);
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,15 +50,66 @@ export default function CustomerOrder() {
   const [smsOptIn, setSmsOptIn] = useState(false);
   const [isSmsSubscribed, setIsSmsSubscribed] = useState(false); // New state for SMS subscription status
 
-  const validateDeliveryAddress = useCallback((addressData) => {
-    if (!addressData || !addressData.lat || !addressData.lng) {
+  const STORE_ADDRESS = "1247 Bielby Waterford, MI 48328";
+  const MAX_DELIVERY_DISTANCE_MILES = 10;
+
+  const calculateDistance = useCallback(async (destinationAddress) => {
+    if (!destinationAddress) {
+      setDeliveryDistance(null);
       setInDeliveryZone(false);
       return;
     }
-    // For now, we'll assume all valid addresses are in delivery zone
-    // You can implement polygon checking or distance-based validation here based on `addressData.lat` and `addressData.lng`
-    setInDeliveryZone(true);
-  }, []);
+
+    setIsCalculatingDistance(true);
+    try {
+      // Use the Haversine formula for straight-line distance as a fallback
+      const calculateHaversineDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 3959; // Earth's radius in miles
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+
+      // Store coordinates (1247 Bielby, Waterford, MI 48328)
+      const storeLat = 42.6725;
+      const storeLng = -83.3799;
+
+      if (destinationAddress.lat && destinationAddress.lng) {
+        const distance = calculateHaversineDistance(
+          storeLat,
+          storeLng,
+          destinationAddress.lat,
+          destinationAddress.lng
+        );
+
+        setDeliveryDistance(distance);
+        setInDeliveryZone(distance <= MAX_DELIVERY_DISTANCE_MILES);
+      } else {
+        setDeliveryDistance(null);
+        setInDeliveryZone(false);
+      }
+    } catch (error) {
+      console.error("Error calculating distance:", error);
+      setDeliveryDistance(null);
+      setInDeliveryZone(false);
+    } finally {
+      setIsCalculatingDistance(false);
+    }
+  }, [MAX_DELIVERY_DISTANCE_MILES]);
+
+  const validateDeliveryAddress = useCallback((addressData) => {
+    if (!addressData || !addressData.lat || !addressData.lng) {
+      setInDeliveryZone(false);
+      setDeliveryDistance(null);
+      return;
+    }
+    calculateDistance(addressData);
+  }, [calculateDistance]);
 
   const loadData = useCallback(async () => {
     try {
@@ -272,7 +325,11 @@ export default function CustomerOrder() {
     }
     
     if (!inDeliveryZone) {
-      alert("Please confirm you are within the delivery area.");
+      if (deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES) {
+        alert(`Sorry, your delivery address is ${deliveryDistance.toFixed(1)} miles away. We only deliver within ${MAX_DELIVERY_DISTANCE_MILES} miles of ${STORE_ADDRESS}.`);
+      } else {
+        alert("Please confirm you are within the delivery area.");
+      }
       return;
     }
     if (cart.length === 0) {
@@ -570,9 +627,17 @@ export default function CustomerOrder() {
                     {/* Address Autocomplete: Show for guests, new users (no saved address), or when "Enter new" is selected */}
                     {
                       (isGuest || !currentUser || (currentUser && deliveryAddressSource === 'new')) && (
-                        <AddressAutocomplete 
-                          onAddressChange={isGuest ? (addr) => setGuestInfo({...guestInfo, address: addr}) : handleAddressChange} 
-                          value={isGuest ? guestInfo.address : newAddress} 
+                        <AddressAutocomplete
+                          onAddressChange={isGuest ? (addr) => {
+                            setGuestInfo({...guestInfo, address: addr});
+                            if (addr && !addr.manual) {
+                              validateDeliveryAddress(addr);
+                            } else {
+                              setInDeliveryZone(false);
+                              setDeliveryDistance(null);
+                            }
+                          } : handleAddressChange}
+                          value={isGuest ? guestInfo.address : newAddress}
                         />
                       )
                     }
@@ -750,15 +815,49 @@ export default function CustomerOrder() {
                       </RadioGroup>
                     </div>
 
-                    <div className="items-top flex space-x-2">
-                      <Checkbox id="delivery-zone" checked={inDeliveryZone} onCheckedChange={setInDeliveryZone} />
-                      <div className="grid gap-1.5 leading-none">
-                        <Label htmlFor="delivery-zone" className="font-medium">
-                          I am within the delivery area.
-                        </Label>
-                        <Button variant="link" className="p-0 h-auto text-orange-600" onClick={() => setShowDeliveryArea(true)}>
-                          View Delivery Map
-                        </Button>
+                    <div className="space-y-3">
+                      {/* Distance Display */}
+                      {isCalculatingDistance && (
+                        <div className="text-sm text-gray-600">
+                          Calculating distance...
+                        </div>
+                      )}
+                      {!isCalculatingDistance && deliveryDistance !== null && (
+                        <div className={`text-sm font-medium ${deliveryDistance <= MAX_DELIVERY_DISTANCE_MILES ? 'text-green-600' : 'text-red-600'}`}>
+                          Distance from {STORE_ADDRESS}: {deliveryDistance.toFixed(1)} miles
+                          {deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
+                            <span className="block text-xs mt-1">
+                              (Maximum delivery distance is {MAX_DELIVERY_DISTANCE_MILES} miles)
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Delivery Zone Checkbox */}
+                      <div className="items-top flex space-x-2">
+                        <Checkbox
+                          id="delivery-zone"
+                          checked={inDeliveryZone}
+                          onCheckedChange={(checked) => {
+                            if (checked && deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES) {
+                              alert(`Sorry, your delivery address is ${deliveryDistance.toFixed(1)} miles away. We only deliver within ${MAX_DELIVERY_DISTANCE_MILES} miles.`);
+                              return;
+                            }
+                            setInDeliveryZone(checked);
+                          }}
+                          disabled={deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES}
+                        />
+                        <div className="grid gap-1.5 leading-none">
+                          <Label
+                            htmlFor="delivery-zone"
+                            className={`font-medium ${deliveryDistance !== null && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES ? 'text-gray-400' : ''}`}
+                          >
+                            I am within the delivery area.
+                          </Label>
+                          <Button variant="link" className="p-0 h-auto text-orange-600" onClick={() => setShowDeliveryArea(true)}>
+                            View Delivery Map
+                          </Button>
+                        </div>
                       </div>
                     </div>
 
