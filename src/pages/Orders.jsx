@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Order, MenuItem } from "@/api/entities";
+import { Order, MenuItem } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search } from "lucide-react";
@@ -29,7 +29,7 @@ export default function Orders() {
   const loadData = async () => {
     try {
       const [ordersData, menuData] = await Promise.all([
-        Order.list("-created_date"),
+        Order.list("-created_at"),
         MenuItem.filter({ available: true })
       ]);
       

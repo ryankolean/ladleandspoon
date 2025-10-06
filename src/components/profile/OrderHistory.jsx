@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Order } from '@/api/entities';
-import { User } from '@/api/entities';
+import { Order } from '@/services';
+import { User } from '@/services';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,7 +15,7 @@ export default function OrderHistory() {
       try {
         const currentUser = await User.me();
         // The RLS on Order entity automatically filters by created_by
-        const userOrders = await Order.list("-created_date");
+        const userOrders = await Order.list("-created_at");
         setOrders(userOrders);
       } catch (error) {
         console.error("Failed to load order history", error);
@@ -46,7 +46,7 @@ export default function OrderHistory() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="text-lg">Order #{order.id.substring(0, 8)}...</CardTitle>
-              <span className="text-sm text-gray-500">{format(new Date(order.created_date), 'MMM d, yyyy')}</span>
+              <span className="text-sm text-gray-500">{format(new Date(order.created_at), 'MMM d, yyyy')}</span>
             </div>
           </CardHeader>
           <CardContent>

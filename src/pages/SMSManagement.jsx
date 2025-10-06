@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { SMSSubscription, SMSCampaign } from "@/api/entities";
+import { SMSSubscription, SMSCampaign } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +28,7 @@ export default function SMSManagement() {
     try {
       const [subscribersData, campaignsData] = await Promise.all([
         SMSSubscription.filter({ is_subscribed: true }),
-        SMSCampaign.list("-created_date")
+        SMSCampaign.list("-created_at")
       ]);
       
       setSubscribers(subscribersData);

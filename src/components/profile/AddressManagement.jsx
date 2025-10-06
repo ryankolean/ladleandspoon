@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserAddress } from '@/api/entities';
+import { UserAddress } from '@/services';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Home, Trash, Edit } from 'lucide-react';

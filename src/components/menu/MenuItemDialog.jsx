@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { UploadFile } from "@/api/integrations";
 import { Loader2, Plus, Minus } from "lucide-react";
 
 const defaultItemState = {
@@ -57,8 +56,8 @@ export default function MenuItemDialog({ open, onClose, item, onSubmit }) {
 
     setIsUploading(true);
     try {
-      const { file_url } = await UploadFile({ file });
-      setItemData(prev => ({ ...prev, image_url: file_url }));
+      console.log("Image upload not yet implemented");
+      alert("Image upload feature coming soon!");
     } catch (error) {
       console.error("Image upload failed:", error);
     } finally {

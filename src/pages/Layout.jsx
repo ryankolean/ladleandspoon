@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { User } from "@/api/entities";
+import { User } from "@/services";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -27,8 +27,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import ViewToggle from "./components/ViewToggle";
-import CustomerOrder from "./pages/CustomerOrder";
+import ViewToggle from "@/components/ViewToggle";
+import CustomerOrder from "@/pages/CustomerOrder";
 
 const navigationItems = [
   {

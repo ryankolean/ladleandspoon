@@ -62,7 +62,7 @@ export default function OrdersList({ orders, isLoading, onOrderSelect, onOrderUp
                     </p>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Clock className="w-3 h-3" />
-                      {format(new Date(order.created_date), "HH:mm")}
+                      {format(new Date(order.created_at), "HH:mm")}
                       <span>•</span>
                       <DollarSign className="w-3 h-3" />
                       ${order.total?.toFixed(2)}

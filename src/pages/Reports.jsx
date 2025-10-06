@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Order, MenuItem } from "@/api/entities";
+import { Order, MenuItem } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, TrendingUp, TrendingDown } from "lucide-react";
@@ -25,7 +25,7 @@ export default function Reports() {
   const loadReportsData = async () => {
     try {
       const [ordersData, menuData] = await Promise.all([
-        Order.list("-created_date"),
+        Order.list("-created_at"),
         MenuItem.list()
       ]);
       
@@ -53,7 +53,7 @@ export default function Reports() {
   const { start: startDate, end: endDate } = getDateRange();
   
   const filteredOrders = orders.filter(order => {
-    const orderDate = new Date(order.created_date);
+    const orderDate = new Date(order.created_at);
     return orderDate >= startDate && orderDate <= endDate;
   });
 

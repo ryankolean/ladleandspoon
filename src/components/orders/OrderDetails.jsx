@@ -77,7 +77,7 @@ export default function OrderDetails({ order, onOrderUpdate }) {
         <div className="grid grid-cols-1 gap-4">
           <div>
             <p className="text-sm text-gray-500">Order Time</p>
-            <p className="font-semibold">{format(new Date(order.created_date), "MMM d, HH:mm")}</p>
+            <p className="font-semibold">{format(new Date(order.created_at), "MMM d, HH:mm")}</p>
           </div>
         </div>
 

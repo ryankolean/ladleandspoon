@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User } from '@/api/entities';
+import { User } from '@/services';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldAlert, LogIn } from 'lucide-react';

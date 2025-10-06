@@ -64,7 +64,7 @@ export default function OrdersLog({ orders, isLoading }) {
 
     if (startDate && endDate) {
       filtered = filtered.filter(order => {
-        const orderDate = new Date(order.created_date);
+        const orderDate = new Date(order.created_at);
         return orderDate >= startDate && orderDate <= endDate;
       });
     }
@@ -124,7 +124,7 @@ export default function OrdersLog({ orders, isLoading }) {
       order.subtotal?.toFixed(2) || '0.00',
       order.tax?.toFixed(2) || '0.00',
       order.total?.toFixed(2) || '0.00',
-      format(new Date(order.created_date), 'yyyy-MM-dd HH:mm:ss'),
+      format(new Date(order.created_at), 'yyyy-MM-dd HH:mm:ss'),
       order.items?.map(item => `${item.name} (${item.quantity}x$${item.price})`).join('; ') || ''
     ]);
 
@@ -339,8 +339,8 @@ export default function OrdersLog({ orders, isLoading }) {
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <p>{format(new Date(order.created_date), 'MMM d, yyyy')}</p>
-                        <p className="text-gray-500">{format(new Date(order.created_date), 'HH:mm')}</p>
+                        <p>{format(new Date(order.created_at), 'MMM d, yyyy')}</p>
+                        <p className="text-gray-500">{format(new Date(order.created_at), 'HH:mm')}</p>
                       </div>
                     </TableCell>
                   </TableRow>

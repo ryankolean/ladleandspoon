@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Order, MenuItem, OrderingWindow, TaxSettings, UserAddress, SMSSubscription } from "@/api/entities";
-import { User } from "@/api/entities";
+import { Order, MenuItem, OrderingWindow, TaxSettings, UserAddress, SMSSubscription, User } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -85,7 +84,7 @@ export default function CustomerOrder() {
             setIsSmsSubscribed(false);
           }
 
-          const savedAddresses = await UserAddress.list('-created_date');
+          const savedAddresses = await UserAddress.list('-created_at');
           setUserAddresses(savedAddresses);
           
           if (savedAddresses.length > 0) {
@@ -308,7 +307,7 @@ export default function CustomerOrder() {
         }
         // 3. Handle SMS opt-in
         if (smsOptIn && finalPhoneNumber && !isSmsSubscribed) { // Only attempt to subscribe if not already subscribed
-            const existingSub = await SMSSubscription.filter({ phone_number: finalPhoneNumber }, '-created_date', 1);
+            const existingSub = await SMSSubscription.filter({ phone_number: finalPhoneNumber }, '-created_at', 1);
             if(existingSub.length > 0) {
                 if(!existingSub[0].is_subscribed) {
                     await SMSSubscription.update(existingSub[0].id, { is_subscribed: true });

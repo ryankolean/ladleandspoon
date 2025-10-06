@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MenuItem } from "@/api/entities";
+import { MenuItem } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
@@ -26,7 +26,7 @@ export default function Menu() {
   const loadMenuItems = async () => {
     setIsLoading(true);
     try {
-      const items = await MenuItem.list("-created_date");
+      const items = await MenuItem.list("-created_at");
       setMenuItems(items);
     } catch (error) {
       console.error("Error loading menu items:", error);

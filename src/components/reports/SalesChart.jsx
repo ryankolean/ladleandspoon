@@ -25,7 +25,7 @@ export default function SalesChart({ orders, isLoading }) {
     
     return days.map(day => {
       const dayOrders = orders.filter(order => {
-        const orderDate = new Date(order.created_date);
+        const orderDate = new Date(order.created_at);
         return format(orderDate, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd') && 
                order.payment_status === 'paid';
       });
