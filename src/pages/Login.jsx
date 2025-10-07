@@ -110,19 +110,6 @@ export default function Login() {
       if (signUpError) throw signUpError;
 
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: fullName,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-
-        if (profileError) {
-          console.error("Profile creation error:", profileError);
-        }
-
         setSuccessMessage("Account created successfully! Signing you in...");
 
         setTimeout(() => {
