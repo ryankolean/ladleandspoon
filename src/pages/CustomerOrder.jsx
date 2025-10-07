@@ -763,11 +763,8 @@ export default function CustomerOrder() {
                       <Checkbox id="sms-opt-in" checked={smsOptIn} onCheckedChange={setSmsOptIn} />
                       <div className="grid gap-1.5 leading-none">
                         <Label htmlFor="sms-opt-in" className="text-sm font-medium">
-                          Receive order updates and promotions via SMS.
+                          Receive updates and promotions via SMS
                         </Label>
-                        <p className="text-xs text-gray-500">
-                          This is the only way to receive notifications for your orders.
-                        </p>
                       </div>
                     </div>
                   )}
