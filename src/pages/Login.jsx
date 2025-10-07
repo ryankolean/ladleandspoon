@@ -29,6 +29,9 @@ export default function Login() {
   const [fieldTouched, setFieldTouched] = useState({});
   const [passwordStrength, setPasswordStrength] = useState(null);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     checkExistingSession();
@@ -291,6 +294,123 @@ export default function Login() {
     navigate('/');
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    const emailValidation = validateEmail(resetEmail);
+    if (!emailValidation.isValid) {
+      setError(emailValidation.errors[0]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await User.resetPasswordForEmail(emailValidation.sanitized);
+      setResetSent(true);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Password reset error:", err);
+      setError(err.message || "Failed to send password reset email. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Coffee className="w-8 h-8 text-orange-600" />
+              <h1 className="text-3xl font-bold text-gray-900">Ladle & Spoon</h1>
+            </div>
+            <p className="text-gray-600">Forgot Your Password?</p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{resetSent ? "Check Your Email" : "Reset Password"}</CardTitle>
+              <CardDescription>
+                {resetSent
+                  ? "We've sent a password reset link to your email address."
+                  : "Enter your email address and we'll send you a link to reset your password."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {resetSent ? (
+                <div className="space-y-4">
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+                    <p className="font-medium">Email sent successfully!</p>
+                    <p className="text-sm mt-1">
+                      Check your inbox for a password reset link. The link will expire in 1 hour.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetSent(false);
+                      setResetEmail("");
+                    }}
+                  >
+                    Back to Login
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reset-email">Email Address</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="reset-email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="pl-10"
+                        disabled={isLoading}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                      {error}
+                    </div>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Sending..." : "Send Reset Link"}
+                  </Button>
+
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPassword(false);
+                        setError("");
+                      }}
+                      className="text-sm text-orange-600 hover:text-orange-700"
+                      disabled={isLoading}
+                    >
+                      Back to Login
+                    </button>
+                  </div>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -416,6 +536,20 @@ export default function Login() {
                     >
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
+
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowForgotPassword(true);
+                          setError("");
+                        }}
+                        className="text-sm text-orange-600 hover:text-orange-700"
+                        disabled={isLoading}
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
                   </form>
                 </TabsContent>
 

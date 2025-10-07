@@ -63,11 +63,94 @@ export const User = {
     return data;
   },
 
+  async checkAccountLockout(email) {
+    checkSupabase();
+    try {
+      const { data, error } = await supabase.rpc('check_account_lockout', {
+        p_email: email
+      });
+
+      if (error) {
+        console.error('Error checking lockout:', error);
+        return { isLocked: false, lockedUntil: null, failedAttempts: 0 };
+      }
+
+      if (data && data.length > 0) {
+        const lockoutInfo = data[0];
+        return {
+          isLocked: lockoutInfo.is_locked,
+          lockedUntil: lockoutInfo.locked_until,
+          failedAttempts: lockoutInfo.failed_attempts,
+          reason: lockoutInfo.reason
+        };
+      }
+
+      return { isLocked: false, lockedUntil: null, failedAttempts: 0 };
+    } catch (err) {
+      console.error('Exception checking lockout:', err);
+      return { isLocked: false, lockedUntil: null, failedAttempts: 0 };
+    }
+  },
+
+  async recordLoginAttempt(email, success, errorMessage = null) {
+    checkSupabase();
+    try {
+      await supabase.rpc('record_login_attempt', {
+        p_email: email,
+        p_success: success,
+        p_ip_address: null,
+        p_user_agent: navigator?.userAgent || null,
+        p_error_message: errorMessage
+      });
+    } catch (err) {
+      console.error('Error recording login attempt:', err);
+    }
+  },
+
   async signIn(email, password) {
     checkSupabase();
+
+    const lockoutStatus = await this.checkAccountLockout(email);
+
+    if (lockoutStatus.isLocked) {
+      const lockedUntil = new Date(lockoutStatus.lockedUntil);
+      const minutesRemaining = Math.ceil((lockedUntil - new Date()) / 60000);
+      const error = new Error(
+        `Account temporarily locked due to too many failed login attempts. Please try again in ${minutesRemaining} minute${minutesRemaining !== 1 ? 's' : ''}.`
+      );
+      error.code = 'ACCOUNT_LOCKED';
+      error.lockedUntil = lockoutStatus.lockedUntil;
+      throw error;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
+    });
+
+    if (error) {
+      await this.recordLoginAttempt(email, false, error.message);
+      throw error;
+    }
+
+    await this.recordLoginAttempt(email, true);
+    return data;
+  },
+
+  async resetPasswordForEmail(email) {
+    checkSupabase();
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePassword(newPassword) {
+    checkSupabase();
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
     });
     if (error) throw error;
     return data;

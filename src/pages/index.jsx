@@ -24,6 +24,8 @@ import Login from "./Login";
 
 import AuthCallback from "./AuthCallback";
 
+import ResetPassword from "./ResetPassword";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -74,6 +76,10 @@ function PagesContent() {
 
     if (location.pathname === '/auth/callback') {
         return <AuthCallback />;
+    }
+
+    if (location.pathname === '/reset-password') {
+        return <ResetPassword />;
     }
 
     return (
