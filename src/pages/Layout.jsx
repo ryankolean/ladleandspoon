@@ -12,6 +12,7 @@ import {
   Coffee,
   MessageSquare,
   Truck,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -117,6 +118,15 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await User.signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   // If still checking authentication, show loading
   if (isCheckingAuth) {
     return (
@@ -133,12 +143,21 @@ export default function Layout({ children, currentPageName }) {
   if (!currentUser || currentView === "customer") {
     return (
       <div className="min-h-screen relative">
-        {/* Only show view toggle if user is logged in and is admin */}
-        {currentUser?.role === 'admin' && (
-          <div className="absolute top-4 right-4 z-50">
+        {/* Top right controls */}
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+          {currentUser?.role === 'admin' && (
             <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
-          </div>
-        )}
+          )}
+          {currentUser && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 text-sm font-medium text-red-600 hover:bg-red-50 border border-red-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
+          )}
+        </div>
         <CustomerOrder />
       </div>
     );
@@ -192,7 +211,7 @@ export default function Layout({ children, currentPageName }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-orange-100 p-4">
+          <SidebarFooter className="border-t border-orange-100 p-4 space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full flex items-center justify-center">
                 <span className="text-orange-700 font-semibold text-sm">
@@ -206,6 +225,13 @@ export default function Layout({ children, currentPageName }) {
                 <p className="text-xs text-gray-500 truncate">Admin Panel Active</p>
               </div>
             </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
           </SidebarFooter>
         </Sidebar>
 
