@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/services";
+import SessionProvider from "@/components/auth/SessionProvider";
+import { sessionManager } from "@/utils/sessionManager";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -120,6 +122,8 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = async () => {
     try {
+      sessionManager.stopActivityMonitoring();
+      sessionManager.clearSession();
       await User.signOut();
       navigate('/login');
     } catch (error) {
@@ -165,7 +169,8 @@ export default function Layout({ children, currentPageName }) {
 
   // Admin view - only accessible to logged-in admin users
   return (
-    <SidebarProvider>
+    <SessionProvider>
+      <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-orange-50 to-amber-50">
         <Sidebar className="border-r border-orange-100 bg-white/80 backdrop-blur-sm">
           <SidebarHeader className="border-b border-orange-100 p-6">
@@ -253,5 +258,6 @@ export default function Layout({ children, currentPageName }) {
         </main>
       </div>
     </SidebarProvider>
+    </SessionProvider>
   );
 }

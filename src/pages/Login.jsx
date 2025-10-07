@@ -12,6 +12,8 @@ import { supabase } from "@/lib/supabase";
 import { validateEmail, validateFullName, validatePassword, checkEmailExists } from "@/utils/validation";
 import FieldError from "@/components/form/FieldError";
 import PasswordStrength from "@/components/form/PasswordStrength";
+import { sessionManager } from "@/utils/sessionManager";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ export default function Login() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     checkExistingSession();
@@ -215,6 +218,9 @@ export default function Login() {
 
     try {
       await User.signIn(emailValidation.sanitized, password);
+
+      await sessionManager.initializeSession(rememberMe);
+
       navigate(redirectTo);
     } catch (err) {
       console.error("Sign in error:", err);
@@ -528,6 +534,21 @@ export default function Login() {
                         {error}
                       </div>
                     )}
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="remember-me"
+                        checked={rememberMe}
+                        onCheckedChange={setRememberMe}
+                        disabled={isLoading}
+                      />
+                      <label
+                        htmlFor="remember-me"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        Remember me for 30 days
+                      </label>
+                    </div>
 
                     <Button
                       type="submit"
