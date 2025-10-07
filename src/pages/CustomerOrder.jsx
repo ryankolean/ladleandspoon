@@ -660,7 +660,9 @@ export default function CustomerOrder() {
                 
                 {currentUser && (
                   <div className="bg-blue-50 border border-blue-200 rounded-md p-4 space-y-2">
-                    <p className="text-center font-semibold text-blue-900">Welcome back, {currentUser.full_name}! ✓</p>
+                    <p className="text-center font-semibold text-blue-900">
+                      Welcome back, {currentUser.full_name || currentUser.email?.split('@')[0] || 'User'}! ✓
+                    </p>
                     <div className="text-sm text-blue-800 text-center">
                       <p>{currentUser.email}</p>
                     </div>
