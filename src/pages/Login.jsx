@@ -7,8 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Coffee, Mail, Lock, ArrowLeft } from "lucide-react";
+import { Coffee, Mail, Lock, ArrowLeft, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { validateEmail, validateFullName, validatePassword, checkEmailExists } from "@/utils/validation";
+import FieldError from "@/components/form/FieldError";
+import PasswordStrength from "@/components/form/PasswordStrength";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,6 +24,11 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [fieldTouched, setFieldTouched] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   useEffect(() => {
     checkExistingSession();
@@ -39,6 +47,101 @@ export default function Login() {
       }
     } catch (err) {
       console.log("No existing session");
+    }
+  };
+
+  const handleEmailBlur = async () => {
+    setFieldTouched({ ...fieldTouched, email: true });
+
+    const validation = validateEmail(email);
+    if (!validation.isValid) {
+      setFieldErrors({ ...fieldErrors, email: validation.errors[0] });
+      return;
+    }
+
+    const tabElement = document.querySelector('[data-state="active"]');
+    const isSignUpTab = tabElement?.textContent?.includes('Sign Up');
+
+    if (isSignUpTab) {
+      setIsCheckingEmail(true);
+      const emailCheck = await checkEmailExists(validation.sanitized);
+      setIsCheckingEmail(false);
+
+      if (emailCheck.exists) {
+        setFieldErrors({ ...fieldErrors, email: 'This email is already registered. Please sign in instead.' });
+      } else {
+        setFieldErrors({ ...fieldErrors, email: null });
+      }
+    } else {
+      setFieldErrors({ ...fieldErrors, email: null });
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+
+    if (fieldTouched.email) {
+      const validation = validateEmail(newEmail);
+      if (!validation.isValid) {
+        setFieldErrors({ ...fieldErrors, email: validation.errors[0] });
+      } else {
+        setFieldErrors({ ...fieldErrors, email: null });
+      }
+    }
+  };
+
+  const handleFullNameBlur = () => {
+    setFieldTouched({ ...fieldTouched, fullName: true });
+
+    const validation = validateFullName(fullName);
+    if (!validation.isValid) {
+      setFieldErrors({ ...fieldErrors, fullName: validation.errors[0] });
+    } else {
+      setFieldErrors({ ...fieldErrors, fullName: null });
+    }
+  };
+
+  const handleFullNameChange = (e) => {
+    const newName = e.target.value;
+    setFullName(newName);
+
+    if (fieldTouched.fullName) {
+      const validation = validateFullName(newName);
+      if (!validation.isValid) {
+        setFieldErrors({ ...fieldErrors, fullName: validation.errors[0] });
+      } else {
+        setFieldErrors({ ...fieldErrors, fullName: null });
+      }
+    }
+  };
+
+  const handlePasswordBlur = () => {
+    setFieldTouched({ ...fieldTouched, password: true });
+
+    const validation = validatePassword(password);
+    setPasswordStrength(validation.strength);
+
+    if (!validation.isValid) {
+      setFieldErrors({ ...fieldErrors, password: validation.errors[0] });
+    } else {
+      setFieldErrors({ ...fieldErrors, password: null });
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    const validation = validatePassword(newPassword);
+    setPasswordStrength(validation.strength);
+
+    if (fieldTouched.password) {
+      if (!validation.isValid) {
+        setFieldErrors({ ...fieldErrors, password: validation.errors[0] });
+      } else {
+        setFieldErrors({ ...fieldErrors, password: null });
+      }
     }
   };
 
@@ -90,15 +193,25 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setFieldErrors({});
 
-    if (!email || !password) {
-      setError("Please enter both email and password");
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      setFieldErrors({ email: emailValidation.errors[0] });
+      setError("Please fix the errors below");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password) {
+      setFieldErrors({ password: "Password is required" });
+      setError("Please fix the errors below");
       setIsLoading(false);
       return;
     }
 
     try {
-      await User.signIn(email, password);
+      await User.signIn(emailValidation.sanitized, password);
       navigate(redirectTo);
     } catch (err) {
       console.error("Sign in error:", err);
@@ -112,26 +225,48 @@ export default function Login() {
     setIsLoading(true);
     setError("");
     setSuccessMessage("");
+    setFieldErrors({});
 
-    if (!email || !password || !fullName) {
-      setError("Please fill in all fields");
-      setIsLoading(false);
-      return;
+    const nameValidation = validateFullName(fullName);
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+
+    const errors = {};
+
+    if (!nameValidation.isValid) {
+      errors.fullName = nameValidation.errors[0];
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!emailValidation.isValid) {
+      errors.email = emailValidation.errors[0];
+    } else {
+      setIsCheckingEmail(true);
+      const emailCheck = await checkEmailExists(emailValidation.sanitized);
+      setIsCheckingEmail(false);
+
+      if (emailCheck.exists) {
+        errors.email = 'This email is already registered. Please sign in instead.';
+      }
+    }
+
+    if (!passwordValidation.isValid) {
+      errors.password = passwordValidation.errors[0];
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError("Please fix the errors below");
       setIsLoading(false);
       return;
     }
 
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: emailValidation.sanitized,
         password,
         options: {
           data: {
-            full_name: fullName
+            full_name: nameValidation.sanitized
           }
         }
       });
@@ -241,11 +376,13 @@ export default function Login() {
                           type="email"
                           placeholder="your@email.com"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="pl-10"
+                          onChange={handleEmailChange}
+                          onBlur={handleEmailBlur}
+                          className={`pl-10 ${fieldErrors.email ? 'border-red-500' : ''}`}
                           disabled={isLoading}
                         />
                       </div>
+                      <FieldError error={fieldErrors.email} />
                     </div>
 
                     <div className="space-y-2">
@@ -257,11 +394,13 @@ export default function Login() {
                           type="password"
                           placeholder="••••••••"
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="pl-10"
+                          onChange={handlePasswordChange}
+                          onBlur={handlePasswordBlur}
+                          className={`pl-10 ${fieldErrors.password ? 'border-red-500' : ''}`}
                           disabled={isLoading}
                         />
                       </div>
+                      <FieldError error={fieldErrors.password} />
                     </div>
 
                     {error && (
@@ -289,9 +428,12 @@ export default function Login() {
                         type="text"
                         placeholder="John Doe"
                         value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        onChange={handleFullNameChange}
+                        onBlur={handleFullNameBlur}
+                        className={fieldErrors.fullName ? 'border-red-500' : ''}
                         disabled={isLoading}
                       />
+                      <FieldError error={fieldErrors.fullName} />
                     </div>
 
                     <div className="space-y-2">
@@ -303,11 +445,18 @@ export default function Login() {
                           type="email"
                           placeholder="your@email.com"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="pl-10"
-                          disabled={isLoading}
+                          onChange={handleEmailChange}
+                          onBlur={handleEmailBlur}
+                          className={`pl-10 ${fieldErrors.email ? 'border-red-500' : ''}`}
+                          disabled={isLoading || isCheckingEmail}
                         />
                       </div>
+                      {isCheckingEmail && (
+                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                          <span className="animate-spin">⏳</span> Checking email...
+                        </p>
+                      )}
+                      <FieldError error={fieldErrors.email} />
                     </div>
 
                     <div className="space-y-2">
@@ -319,12 +468,15 @@ export default function Login() {
                           type="password"
                           placeholder="••••••••"
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="pl-10"
+                          onChange={handlePasswordChange}
+                          onBlur={handlePasswordBlur}
+                          className={`pl-10 ${fieldErrors.password ? 'border-red-500' : ''}`}
                           disabled={isLoading}
                         />
                       </div>
-                      <p className="text-xs text-gray-500">Minimum 6 characters</p>
+                      <PasswordStrength strength={passwordStrength} password={password} />
+                      <FieldError error={fieldErrors.password} />
+                      <p className="text-xs text-gray-500">Password must be at least 8 characters with uppercase, lowercase, and numbers</p>
                     </div>
 
                     {error && (
