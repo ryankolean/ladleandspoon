@@ -20,6 +20,8 @@ import CustomerSettings from "./CustomerSettings";
 
 import Profile from "./Profile";
 
+import Login from "./Login";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -63,7 +65,11 @@ function _getCurrentPage(url) {
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
-    
+
+    if (location.pathname === '/login') {
+        return <Login />;
+    }
+
     return (
         <Layout currentPageName={currentPage}>
             <Routes>

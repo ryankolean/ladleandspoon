@@ -188,7 +188,51 @@ export default function CustomerOrder() {
       setShowOnboarding(true);
       localStorage.setItem("hasVisitedLadleAndSpoon", "true");
     }
-  }, [loadData]);
+
+    const { data: authListener } = User.onAuthStateChange((event, session) => {
+      (async () => {
+        if (event === 'SIGNED_IN' && session) {
+          try {
+            const user = await User.me();
+            if (user) {
+              setCurrentUser(user);
+              setIsGuest(false);
+              setPhone(user.phone || "");
+
+              if (user.phone) {
+                const subscriptions = await SMSSubscription.filter({ phone_number: user.phone });
+                setIsSmsSubscribed(subscriptions && subscriptions.length > 0);
+              } else {
+                setIsSmsSubscribed(false);
+              }
+
+              const addresses = await UserAddress.filter({ user_id: user.id });
+              setUserAddresses(addresses);
+              if (addresses.length > 0) {
+                setDeliveryAddressSource('saved');
+                setSelectedAddressId(addresses[0].id);
+                await validateDeliveryAddress(addresses[0]);
+              } else {
+                setDeliveryAddressSource('new');
+              }
+            }
+          } catch (error) {
+            console.error('Error loading user after sign in:', error);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setCurrentUser(null);
+          setIsGuest(true);
+          setUserAddresses([]);
+          setPhone("");
+          setIsSmsSubscribed(false);
+        }
+      })();
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [loadData, validateDeliveryAddress]);
 
   const handleLogin = () => {
     User.loginWithRedirect(window.location.href);
@@ -614,7 +658,14 @@ export default function CustomerOrder() {
                   </div>
                 )}
                 
-                {currentUser && <p className="text-center font-semibold">Welcome back, {currentUser.full_name}!</p>}
+                {currentUser && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4 space-y-2">
+                    <p className="text-center font-semibold text-blue-900">Welcome back, {currentUser.full_name}! ✓</p>
+                    <div className="text-sm text-blue-800 text-center">
+                      <p>{currentUser.email}</p>
+                    </div>
+                  </div>
+                )}
 
                 {/* This form is now shown for both guests and logged-in users */}
                 <div className="grid gap-4 pt-4">
@@ -631,7 +682,7 @@ export default function CustomerOrder() {
                     </div>
                   )}
 
-                  {/* Phone Number Field: Show for guests OR signed-in users */}
+                  {/* Phone Number Field: Show for guests OR signed-in users without saved phone */}
                   {isGuest ? (
                     <div>
                       <Label>Phone Number *</Label>
@@ -645,7 +696,7 @@ export default function CustomerOrder() {
                       />
                       <p className="text-xs text-gray-500 mt-1">Enter 10-digit phone number</p>
                     </div>
-                  ) : currentUser && (
+                  ) : currentUser && !currentUser.phone ? (
                     <div>
                       <Label>Phone Number *</Label>
                       <Input
@@ -657,11 +708,14 @@ export default function CustomerOrder() {
                         required
                       />
                       <p className="text-xs text-gray-500 mt-1">Enter 10-digit phone number</p>
-                      {currentUser.phone && phone === currentUser.phone && (
-                        <p className="text-xs text-gray-500 mt-1">Using your saved phone number</p>
-                      )}
                     </div>
-                  )}
+                  ) : currentUser && currentUser.phone ? (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                      <Label className="text-sm font-medium text-green-900">Phone Number</Label>
+                      <p className="text-sm text-green-800 mt-1">{formatPhoneNumber(currentUser.phone)} ✓</p>
+                      <p className="text-xs text-green-600 mt-1">Using your saved phone number</p>
+                    </div>
+                  ) : null}
 
                   {/* Address Section */}
                   <div>

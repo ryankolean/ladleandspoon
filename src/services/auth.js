@@ -133,12 +133,22 @@ export const User = {
     return await this.updateUser(updates);
   },
 
+  async signInWithOAuth(provider, options = {}) {
+    checkSupabase();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options
+    });
+    if (error) throw error;
+    return data;
+  },
+
   login() {
     console.log('Please implement authentication login');
   },
 
   loginWithRedirect(redirectUrl) {
-    console.log('Please implement authentication with redirect:', redirectUrl);
+    window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
   },
 
   onAuthStateChange(callback) {
