@@ -49,10 +49,21 @@ export default function Login() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Provider') || error.message.includes('not enabled') || error.message.includes('disabled')) {
+          throw new Error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not yet configured. Please use email/password to sign in or contact support.`);
+        }
+        throw error;
+      }
     } catch (err) {
       console.error(`${provider} login error:`, err);
-      setError(err.message || `Failed to sign in with ${provider}. Please try again.`);
+      let errorMessage = err.message;
+
+      if (errorMessage && (errorMessage.includes('not enabled') || errorMessage.includes('disabled') || errorMessage.includes('Provider'))) {
+        errorMessage = `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not configured yet. Please sign in with email/password instead.`;
+      }
+
+      setError(errorMessage || `Failed to sign in with ${provider}. Please try again.`);
       setIsLoading(false);
     }
   };
