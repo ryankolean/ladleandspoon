@@ -4,6 +4,8 @@ import Dashboard from "./Dashboard";
 
 import Orders from "./Orders";
 
+import DeliveryRoute from "./DeliveryRoute";
+
 import Menu from "./Menu";
 
 import Reports from "./Reports";
@@ -21,25 +23,27 @@ import Profile from "./Profile";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
-    
+
     Dashboard: Dashboard,
-    
+
     Orders: Orders,
-    
+
+    DeliveryRoute: DeliveryRoute,
+
     Menu: Menu,
-    
+
     Reports: Reports,
-    
+
     CustomerOrder: CustomerOrder,
-    
+
     OrderingSettings: OrderingSettings,
-    
+
     SMSManagement: SMSManagement,
-    
+
     CustomerSettings: CustomerSettings,
-    
+
     Profile: Profile,
-    
+
 }
 
 function _getCurrentPage(url) {
@@ -66,6 +70,7 @@ function PagesContent() {
                 <Route path="/" element={<CustomerOrder />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/orders" element={<Orders />} />
+                <Route path="/deliveryroute" element={<DeliveryRoute />} />
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<OrderingSettings />} />

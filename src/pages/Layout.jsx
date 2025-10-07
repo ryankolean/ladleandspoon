@@ -11,6 +11,7 @@ import {
   Settings,
   Coffee,
   MessageSquare,
+  Truck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,11 @@ const navigationItems = [
     title: "Orders",
     url: createPageUrl("Orders"),
     icon: ShoppingCart,
+  },
+  {
+    title: "Delivery Route",
+    url: createPageUrl("DeliveryRoute"),
+    icon: Truck,
   },
   {
     title: "Menu",
