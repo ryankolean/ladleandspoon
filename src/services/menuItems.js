@@ -1,7 +1,9 @@
 import { supabase } from '@/lib/supabase';
+import { checkSupabase } from '@/lib/supabaseCheck';
 
 export const MenuItem = {
   async list(orderBy = '-created_at') {
+    checkSupabase();
     const [field, direction] = orderBy.startsWith('-')
       ? [orderBy.slice(1), false]
       : [orderBy, true];
@@ -16,6 +18,7 @@ export const MenuItem = {
   },
 
   async filter(filters) {
+    checkSupabase();
     let query = supabase.from('menu_items').select('*');
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -28,6 +31,7 @@ export const MenuItem = {
   },
 
   async get(id) {
+    checkSupabase();
     const { data, error } = await supabase
       .from('menu_items')
       .select('*')
@@ -39,6 +43,7 @@ export const MenuItem = {
   },
 
   async create(itemData) {
+    checkSupabase();
     const { data, error } = await supabase
       .from('menu_items')
       .insert({
@@ -54,6 +59,7 @@ export const MenuItem = {
   },
 
   async update(id, updates) {
+    checkSupabase();
     const { data, error } = await supabase
       .from('menu_items')
       .update({
@@ -69,6 +75,7 @@ export const MenuItem = {
   },
 
   async delete(id) {
+    checkSupabase();
     const { error } = await supabase
       .from('menu_items')
       .delete()

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { checkSupabase } from '@/lib/supabaseCheck';
 
 export const SMSSubscription = {
   async list(orderBy = '-created_at') {

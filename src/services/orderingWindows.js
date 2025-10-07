@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { checkSupabase } from '@/lib/supabaseCheck';
 
 export const OrderingWindow = {
   async list(orderBy = 'day_of_week') {

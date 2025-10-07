@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { checkSupabase } from '@/lib/supabaseCheck';
 
 export const TaxSettings = {
   async list() {
