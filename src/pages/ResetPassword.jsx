@@ -9,6 +9,9 @@ import { Coffee, Lock, CheckCircle2 } from 'lucide-react';
 import { validatePassword } from '@/utils/validation';
 import FieldError from '@/components/form/FieldError';
 import PasswordStrength from '@/components/form/PasswordStrength';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import FormAlert from '@/components/feedback/FormAlert';
+import SuccessAnimation from '@/components/feedback/SuccessAnimation';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -105,11 +108,11 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <CheckCircle2 className="w-16 h-16 text-green-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful!</h2>
-            <p className="text-gray-600 mb-4">Your password has been updated.</p>
-            <p className="text-sm text-gray-500">Redirecting to login page...</p>
+          <CardContent className="pt-6">
+            <SuccessAnimation
+              message="Password Reset Successful!"
+              subMessage="Your password has been updated. Redirecting to login page..."
+            />
           </CardContent>
         </Card>
       </div>
@@ -175,12 +178,11 @@ export default function ResetPassword() {
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                  {error}
-                </div>
+                <FormAlert variant="error" message={error} />
               )}
 
               <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                 {isLoading ? 'Resetting Password...' : 'Reset Password'}
               </Button>
 

@@ -14,6 +14,9 @@ import FieldError from "@/components/form/FieldError";
 import PasswordStrength from "@/components/form/PasswordStrength";
 import { sessionManager } from "@/utils/sessionManager";
 import { Checkbox } from "@/components/ui/checkbox";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import FormAlert from "@/components/feedback/FormAlert";
+import SuccessAnimation from "@/components/feedback/SuccessAnimation";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -347,16 +350,14 @@ export default function Login() {
             <CardContent>
               {resetSent ? (
                 <div className="space-y-4">
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                    <p className="font-medium">Email sent successfully!</p>
-                    <p className="text-sm mt-1">
-                      Check your inbox for a password reset link. The link will expire in 1 hour.
-                    </p>
-                  </div>
+                  <SuccessAnimation
+                    message="Email sent successfully!"
+                    subMessage="Check your inbox for a password reset link. The link will expire in 1 hour."
+                  />
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="w-full mt-4"
                     onClick={() => {
                       setShowForgotPassword(false);
                       setResetSent(false);
@@ -386,12 +387,11 @@ export default function Login() {
                   </div>
 
                   {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                      {error}
-                    </div>
+                    <FormAlert variant="error" message={error} />
                   )}
 
                   <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                     {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>
 
@@ -530,9 +530,7 @@ export default function Login() {
                     </div>
 
                     {error && (
-                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                        {error}
-                      </div>
+                      <FormAlert variant="error" message={error} />
                     )}
 
                     <div className="flex items-center space-x-2">
@@ -555,6 +553,7 @@ export default function Login() {
                       className="w-full"
                       disabled={isLoading}
                     >
+                      {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
 
@@ -635,15 +634,11 @@ export default function Login() {
                     </div>
 
                     {error && (
-                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                        {error}
-                      </div>
+                      <FormAlert variant="error" message={error} />
                     )}
 
                     {successMessage && (
-                      <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                        {successMessage}
-                      </div>
+                      <FormAlert variant="success" message={successMessage} />
                     )}
 
                     <Button
@@ -651,6 +646,7 @@ export default function Login() {
                       className="w-full"
                       disabled={isLoading}
                     >
+                      {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                       {isLoading ? "Creating account..." : "Create Account"}
                     </Button>
                   </form>
