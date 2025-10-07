@@ -24,7 +24,12 @@ export default function Login() {
 
   useEffect(() => {
     checkExistingSession();
-  }, []);
+
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+  }, [searchParams]);
 
   const checkExistingSession = async () => {
     try {
@@ -42,16 +47,29 @@ export default function Login() {
     setError("");
 
     try {
+      const callbackUrl = `${window.location.origin}/auth/callback`;
+      const redirectParams = new URLSearchParams();
+      if (redirectTo && redirectTo !== '/') {
+        redirectParams.set('redirect', redirectTo);
+      }
+      const finalRedirect = redirectParams.toString()
+        ? `${callbackUrl}?${redirectParams.toString()}`
+        : callbackUrl;
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          redirectTo: `${window.location.origin}${redirectTo}`
+          redirectTo: finalRedirect,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
 
       if (error) {
         if (error.message.includes('Provider') || error.message.includes('not enabled') || error.message.includes('disabled')) {
-          throw new Error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not yet configured. Please use email/password to sign in or contact support.`);
+          throw new Error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is not yet configured. Please contact support or use email/password instead.`);
         }
         throw error;
       }

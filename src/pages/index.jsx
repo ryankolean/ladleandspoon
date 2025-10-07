@@ -22,6 +22,8 @@ import Profile from "./Profile";
 
 import Login from "./Login";
 
+import AuthCallback from "./AuthCallback";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -68,6 +70,10 @@ function PagesContent() {
 
     if (location.pathname === '/login') {
         return <Login />;
+    }
+
+    if (location.pathname === '/auth/callback') {
+        return <AuthCallback />;
     }
 
     return (
