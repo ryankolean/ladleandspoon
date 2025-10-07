@@ -100,6 +100,11 @@ export const validatePassword = (password) => {
     errors.push('Password must be at least 8 characters');
   }
 
+  if (password.length > 128) {
+    errors.push('Password is too long (maximum 128 characters)');
+    return { isValid: false, errors, requirements, strength: 'weak' };
+  }
+
   if (/[A-Z]/.test(password)) {
     requirements.hasUpperCase = true;
   }
@@ -116,11 +121,35 @@ export const validatePassword = (password) => {
     requirements.hasSpecialChar = true;
   }
 
+  const commonPasswords = [
+    'password', 'password123', '12345678', 'qwerty', 'abc123',
+    'monkey', '1234567890', 'letmein', 'trustno1', 'dragon',
+    'baseball', 'iloveyou', 'master', 'sunshine', 'ashley',
+    'bailey', 'passw0rd', 'shadow', '123123', '654321',
+    'superman', 'qazwsx', 'michael', 'football'
+  ];
+
+  const lowerPassword = password.toLowerCase();
+  if (commonPasswords.some(common => lowerPassword.includes(common))) {
+    errors.push('Password is too common. Please choose a more unique password');
+    return { isValid: false, errors, requirements, strength: 'weak' };
+  }
+
+  const hasRepeatingChars = /(.)\1{2,}/.test(password);
+  if (hasRepeatingChars) {
+    errors.push('Password contains too many repeating characters');
+  }
+
+  const hasSequentialChars = /(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/i.test(password);
+  if (hasSequentialChars) {
+    errors.push('Password contains sequential characters. Please use a more random pattern');
+  }
+
   let strength = 'weak';
   const metRequirements = Object.values(requirements).filter(Boolean).length;
 
   if (password.length >= 8) {
-    if (metRequirements >= 4) {
+    if (metRequirements >= 4 && !hasRepeatingChars && !hasSequentialChars) {
       strength = 'strong';
     } else if (metRequirements >= 3) {
       strength = 'medium';
@@ -138,7 +167,10 @@ export const validatePassword = (password) => {
     if (!requirements.hasSpecialChar) errors.push('Add special characters for stronger password');
   }
 
-  const isValid = password.length >= 8 && metRequirements >= 3;
+  const isValid = password.length >= 8 &&
+                  password.length <= 128 &&
+                  metRequirements >= 3 &&
+                  !commonPasswords.some(common => lowerPassword.includes(common));
 
   return {
     isValid,
