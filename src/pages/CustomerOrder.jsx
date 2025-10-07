@@ -721,7 +721,6 @@ export default function CustomerOrder() {
 
                   {/* Address Section */}
                   <div>
-                    <Label className="font-semibold block mb-2">Delivery Address *</Label>
                     {/* For logged-in users with saved addresses */}
                     {currentUser && userAddresses.length > 0 && (
                       <div className="space-y-4">
