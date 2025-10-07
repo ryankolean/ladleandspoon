@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/services";
 import {
@@ -65,6 +65,7 @@ const navigationItems = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState("customer");
   const [currentUser, setCurrentUser] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -101,6 +102,15 @@ export default function Layout({ children, currentPageName }) {
     checkAuth();
   }, []);
 
+  const handleViewChange = (newView) => {
+    setCurrentView(newView);
+    if (newView === "admin") {
+      navigate(createPageUrl("Dashboard"));
+    } else {
+      navigate("/");
+    }
+  };
+
   // If still checking authentication, show loading
   if (isCheckingAuth) {
     return (
@@ -120,7 +130,7 @@ export default function Layout({ children, currentPageName }) {
         {/* Only show view toggle if user is logged in and is admin */}
         {currentUser?.role === 'admin' && (
           <div className="absolute top-4 right-4 z-50">
-            <ViewToggle currentView={currentView} onViewChange={setCurrentView} />
+            <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
           </div>
         )}
         <CustomerOrder />
@@ -201,7 +211,7 @@ export default function Layout({ children, currentPageName }) {
                 <h1 className="text-xl font-bold text-gray-900 hidden md:block">Ladle & Spoon POS</h1>
               </div>
 
-              <ViewToggle currentView={currentView} onViewChange={setCurrentView} />
+              <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
             </div>
           </header>
 
