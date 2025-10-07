@@ -19,6 +19,24 @@ import AddressAutocomplete from "../components/customer/AddressAutocomplete";
 import VenmoPayment from "../components/customer/VenmoPayment";
 import CashConfirmation from "../components/customer/CashConfirmation";
 
+const formatPhoneNumber = (value) => {
+  const cleaned = value.replace(/\D/g, '');
+  const limited = cleaned.substring(0, 10);
+
+  if (limited.length <= 3) {
+    return limited;
+  } else if (limited.length <= 6) {
+    return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
+  } else {
+    return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
+  }
+};
+
+const validatePhoneNumber = (phone) => {
+  const cleaned = phone.replace(/\D/g, '');
+  return cleaned.length === 10;
+};
+
 export default function CustomerOrder() {
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState([]);
@@ -26,7 +44,7 @@ export default function CustomerOrder() {
   const [isGuest, setIsGuest] = useState(true);
   const [guestInfo, setGuestInfo] = useState({ name: "", email: "", phone: "", address: null });
   const [phone, setPhone] = useState("");
-  
+
   // New address management state
   const [userAddresses, setUserAddresses] = useState([]);
   const [deliveryAddressSource, setDeliveryAddressSource] = useState('new'); // 'new' or 'saved'
@@ -281,14 +299,42 @@ export default function CustomerOrder() {
     };
   };
 
-  const handleAddressChange = (addressData) => {
-    setNewAddress(addressData); // Always update newAddress when autocomplete is used
+  const handleAddressChange = useCallback((addressData) => {
+    setNewAddress(addressData);
     if (addressData && !addressData.manual) {
       validateDeliveryAddress(addressData);
     } else {
       setInDeliveryZone(false);
       setDeliveryDistance(null);
     }
+  }, []);
+
+  const handleGuestAddressChange = useCallback((addr) => {
+    setGuestInfo(prev => ({ ...prev, address: addr }));
+    if (addr && !addr.manual) {
+      validateDeliveryAddress(addr);
+    } else {
+      setInDeliveryZone(false);
+      setDeliveryDistance(null);
+    }
+  }, []);
+
+  const handlePhoneChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setPhone(formatted);
+  };
+
+  const handleGuestPhoneChange = (value) => {
+    const formatted = formatPhoneNumber(value);
+    setGuestInfo(prev => ({ ...prev, phone: formatted }));
+  };
+
+  const handleGuestNameChange = (value) => {
+    setGuestInfo(prev => ({ ...prev, name: value }));
+  };
+
+  const handleGuestEmailChange = (value) => {
+    setGuestInfo(prev => ({ ...prev, email: value }));
   };
 
 
@@ -311,9 +357,18 @@ export default function CustomerOrder() {
         alert("Please fill in all your information including delivery address.");
         return;
       }
+      if (!validatePhoneNumber(guestInfo.phone)) {
+        alert("Please enter a valid 10-digit phone number.");
+        return;
+      }
     } else { // Logged-in user
-      if (!currentUser?.phone && !phone) {
+      const finalPhone = phone || currentUser?.phone;
+      if (!finalPhone) {
         alert("Please provide a phone number.");
+        return;
+      }
+      if (!validatePhoneNumber(finalPhone)) {
+        alert("Please enter a valid 10-digit phone number.");
         return;
       }
       if (!finalAddress?.formatted_address) {
@@ -567,11 +622,11 @@ export default function CustomerOrder() {
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <Label>Your Name *</Label>
-                        <Input value={guestInfo.name} onChange={(e) => setGuestInfo({...guestInfo, name: e.target.value})} placeholder="Enter your name" required />
+                        <Input value={guestInfo.name} onChange={(e) => handleGuestNameChange(e.target.value)} placeholder="Enter your name" required />
                       </div>
                       <div>
                         <Label>Email Address *</Label>
-                        <Input type="email" value={guestInfo.email} onChange={(e) => setGuestInfo({...guestInfo, email: e.target.value})} placeholder="your@email.com" required />
+                        <Input type="email" value={guestInfo.email} onChange={(e) => handleGuestEmailChange(e.target.value)} placeholder="your@email.com" required />
                       </div>
                     </div>
                   )}
@@ -583,10 +638,12 @@ export default function CustomerOrder() {
                       <Input
                         type="tel"
                         value={guestInfo.phone}
-                        onChange={(e) => setGuestInfo({...guestInfo, phone: e.target.value})}
+                        onChange={(e) => handleGuestPhoneChange(e.target.value)}
                         placeholder="(555) 555-5555"
+                        maxLength={14}
                         required
                       />
+                      <p className="text-xs text-gray-500 mt-1">Enter 10-digit phone number</p>
                     </div>
                   ) : currentUser && (
                     <div>
@@ -594,10 +651,12 @@ export default function CustomerOrder() {
                       <Input
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
                         placeholder="(555) 555-5555"
+                        maxLength={14}
                         required
                       />
+                      <p className="text-xs text-gray-500 mt-1">Enter 10-digit phone number</p>
                       {currentUser.phone && phone === currentUser.phone && (
                         <p className="text-xs text-gray-500 mt-1">Using your saved phone number</p>
                       )}
@@ -636,15 +695,7 @@ export default function CustomerOrder() {
                     {
                       (isGuest || !currentUser || (currentUser && deliveryAddressSource === 'new')) && (
                         <AddressAutocomplete
-                          onAddressChange={isGuest ? (addr) => {
-                            setGuestInfo({...guestInfo, address: addr});
-                            if (addr && !addr.manual) {
-                              validateDeliveryAddress(addr);
-                            } else {
-                              setInDeliveryZone(false);
-                              setDeliveryDistance(null);
-                            }
-                          } : handleAddressChange}
+                          onAddressChange={isGuest ? handleGuestAddressChange : handleAddressChange}
                           value={isGuest ? guestInfo.address : newAddress}
                         />
                       )
