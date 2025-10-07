@@ -3,6 +3,7 @@ export function createPageUrl(pageName) {
     'Dashboard': '/dashboard',
     'Menu': '/menu',
     'Orders': '/orders',
+    'DeliveryRoute': '/deliveryroute',
     'Reports': '/reports',
     'OrderingSettings': '/settings',
     'SMSManagement': '/sms',
