@@ -237,5 +237,52 @@ export const User = {
   onAuthStateChange(callback) {
     checkSupabase();
     return supabase.auth.onAuthStateChange(callback);
+  },
+
+  async isAdmin() {
+    checkSupabase();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const { data, error } = await supabase.rpc('is_user_admin', {
+        user_uuid: user.id
+      });
+
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+
+      return data === true;
+    } catch (err) {
+      console.error('Exception checking admin status:', err);
+      return false;
+    }
+  },
+
+  async listUsersWithRoles() {
+    checkSupabase();
+    const { data, error } = await supabase.rpc('list_users_with_roles');
+    if (error) throw error;
+    return data;
+  },
+
+  async grantAdminRole(userId) {
+    checkSupabase();
+    const { data, error } = await supabase.rpc('grant_admin_role', {
+      target_user_id: userId
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async revokeAdminRole(userId) {
+    checkSupabase();
+    const { data, error } = await supabase.rpc('revoke_admin_role', {
+      target_user_id: userId
+    });
+    if (error) throw error;
+    return data;
   }
 };

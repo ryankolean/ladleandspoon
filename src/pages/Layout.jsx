@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Truck,
   LogOut,
+  Users,
 } from "lucide-react";
 import {
   Sidebar,
@@ -69,6 +70,11 @@ const navigationItems = [
     title: "Ordering Settings",
     url: createPageUrl("OrderingSettings"),
     icon: Settings,
+  },
+  {
+    title: "User Management",
+    url: "/users",
+    icon: Users,
   },
 ];
 

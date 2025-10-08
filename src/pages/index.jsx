@@ -26,6 +26,8 @@ import AuthCallback from "./AuthCallback";
 
 import ResetPassword from "./ResetPassword";
 
+import UserManagement from "./UserManagement";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -49,6 +51,8 @@ const PAGES = {
     CustomerSettings: CustomerSettings,
 
     Profile: Profile,
+
+    UserManagement: UserManagement,
 
 }
 
@@ -95,6 +99,7 @@ function PagesContent() {
                 <Route path="/sms" element={<SMSManagement />} />
                 <Route path="/customer-settings" element={<CustomerSettings />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/users" element={<UserManagement />} />
             </Routes>
         </Layout>
     );
