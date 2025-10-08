@@ -83,6 +83,7 @@ export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState("customer");
   const [currentUser, setCurrentUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
@@ -90,25 +91,22 @@ export default function Layout({ children, currentPageName }) {
       try {
         const user = await User.me();
         setCurrentUser(user);
-        // If user is admin, default to admin view, otherwise stay in customer view
-        if (user?.role === 'admin') {
-          setCurrentView("admin");
+
+        if (user) {
+          const adminStatus = await User.isAdmin();
+          setIsAdmin(adminStatus);
+
+          const path = window.location.pathname;
+          if (adminStatus && path !== '/' && path !== '/order') {
+            setCurrentView("admin");
+          } else {
+            setCurrentView("customer");
+          }
         }
       } catch (error) {
-        // For preview/demo purposes, create a mock admin user if not logged in
-        setCurrentUser({
-          id: 'demo-user',
-          email: 'demo@admin.com',
-          full_name: 'Demo Admin',
-          role: 'admin'
-        });
-        // Check URL to determine initial view
-        const path = window.location.pathname;
-        if (path === '/' || path === '/order') {
-          setCurrentView("customer");
-        } else {
-          setCurrentView("admin");
-        }
+        console.error('Error checking auth:', error);
+        setCurrentUser(null);
+        setIsAdmin(false);
       } finally {
         setIsCheckingAuth(false);
       }
@@ -155,7 +153,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen relative">
         {/* Top right controls */}
         <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
-          {currentUser?.role === 'admin' && (
+          {isAdmin && (
             <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
           )}
           {currentUser && (

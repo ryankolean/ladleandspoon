@@ -3,24 +3,48 @@
 ## Overview
 This system allows you to manage admin roles for users in your restaurant application. Admin users have full access to the dashboard, orders, menu management, reports, and user administration.
 
+**⚠️ CRITICAL**: You MUST complete Step 1 and Step 2 below before the admin functionality will work. The application code is ready, but requires database setup.
+
 ## Step 1: Apply Database Migration
 
-You need to run the SQL migration in your Supabase project to enable admin role functionality.
+**This step is REQUIRED** - the SQL functions must be created in your database.
 
-### Instructions:
+### Detailed Instructions:
 
 1. **Open Supabase Dashboard**
-   - Go to https://supabase.com/dashboard
-   - Navigate to your project: `sgpsqlwggwtzmydntvny`
+   - Go to https://supabase.com/dashboard/projects
+   - Click on your project: `sgpsqlwggwtzmydntvny`
 
-2. **Open SQL Editor**
-   - Click on "SQL Editor" in the left sidebar
-   - Click "New Query"
+2. **Navigate to SQL Editor**
+   - In the left sidebar, find and click on "SQL Editor"
+   - Click the "+ New Query" button at the top
 
-3. **Run the Migration**
-   - Copy the contents of `supabase/migrations/20251008000000_add_admin_role_management.sql`
-   - Paste it into the SQL editor
-   - Click "Run" to execute the migration
+3. **Copy the Migration SQL**
+   - Open the file: `supabase/migrations/20251008000000_add_admin_role_management.sql`
+   - Select ALL the contents (all 98 lines)
+   - Copy to clipboard (Ctrl/Cmd + C)
+
+4. **Paste and Run the Migration**
+   - Paste the SQL into the Supabase SQL Editor (Ctrl/Cmd + V)
+   - Click the green "Run" button (or press Ctrl/Cmd + Enter)
+   - You should see: "Success. No rows returned"
+
+5. **Verify the Migration Worked**
+   Run this query in the SQL Editor:
+   ```sql
+   SELECT routine_name
+   FROM information_schema.routines
+   WHERE routine_schema = 'public'
+   AND routine_name LIKE '%admin%';
+   ```
+
+   You should see 4 functions returned:
+   - `grant_admin_role`
+   - `is_user_admin`
+   - `list_users_with_roles`
+   - `revoke_admin_role`
+
+   If you don't see these functions, the migration didn't run correctly - go back to step 3.
 
 ### What the Migration Does:
 - Adds an index on the `role` field in the `profiles` table for better performance
@@ -33,29 +57,42 @@ You need to run the SQL migration in your Supabase project to enable admin role 
 
 After applying the migration, you need to set yourself as an admin.
 
-### Method 1: Using SQL (Recommended for first admin)
+### Method 1: Using SQL (REQUIRED for first admin)
 
-1. In the Supabase SQL Editor, run this query:
+**You MUST do this to create your first admin user.**
 
-```sql
--- Replace 'your-email@example.com' with your actual email
-UPDATE public.profiles
-SET role = 'admin', updated_at = NOW()
-WHERE id = (
-  SELECT id FROM auth.users WHERE email = 'your-email@example.com'
-);
-```
+1. **Find your email address**
+   First, find your registered email. In the Supabase SQL Editor, run:
+   ```sql
+   SELECT email FROM auth.users ORDER BY created_at DESC LIMIT 5;
+   ```
+   This shows your most recent users. Find YOUR email address.
 
-2. Verify it worked:
+2. **Set yourself as admin**
+   In the Supabase SQL Editor, run this query (replace the email):
+   ```sql
+   -- Replace 'your-email@example.com' with your actual email from step 1
+   UPDATE public.profiles
+   SET role = 'admin', updated_at = NOW()
+   WHERE id = (
+     SELECT id FROM auth.users WHERE email = 'your-email@example.com'
+   );
+   ```
 
-```sql
-SELECT p.id, u.email, p.role
-FROM public.profiles p
-JOIN auth.users u ON u.id = p.id
-WHERE u.email = 'your-email@example.com';
-```
+3. **Verify it worked**
+   Run this query to confirm:
+   ```sql
+   SELECT p.id, u.email, p.role
+   FROM public.profiles p
+   JOIN auth.users u ON u.id = p.id
+   WHERE u.email = 'your-email@example.com';
+   ```
 
-You should see your email with role = 'admin'.
+   You should see one row with:
+   - Your email address
+   - role = 'admin'
+
+   If you see role = 'customer' or NULL, the update didn't work - check your email spelling.
 
 ### Method 2: Using the Application (for subsequent admins)
 
@@ -111,23 +148,62 @@ Admin users see a view toggle that allows them to:
 
 ## Troubleshooting
 
-### I can't see the User Management link
-- Make sure you ran the database migration
-- Verify your account has `role = 'admin'` in the profiles table
-- Try logging out and back in
+### I can't see the User Management link or admin dashboard
+**Cause**: Your role is not set to 'admin' in the database
+
+**Solution**:
+1. Verify the database migration was applied (see Step 1)
+2. Check your role with this SQL:
+   ```sql
+   SELECT u.email, p.role
+   FROM auth.users u
+   LEFT JOIN profiles p ON p.id = u.id
+   WHERE u.email = 'your-email@example.com';
+   ```
+3. If role is NULL or 'customer', run the UPDATE command from Step 2
+4. Clear browser cache and log out/log in again
+
+### Error: "Could not find the function public.is_user_admin"
+**Cause**: Database migration was not applied
+
+**Solution**:
+1. Go back to Step 1 and run the migration SQL
+2. Verify functions exist with the verification query in Step 1
+3. If functions don't appear, check Supabase project permissions
 
 ### Error: "Only admins can grant admin roles"
-- This means your account doesn't have admin privileges
+**Cause**: Your account doesn't have admin privileges
+
+**Solution**:
 - Run the SQL command in Step 2 to manually set yourself as admin
+- Make sure you're using the correct email address
+- Log out and log back in after updating
 
 ### Error: "Cannot revoke your own admin role"
-- This is intentional to prevent accidental lockout
-- Have another admin revoke your role if needed
+**Cause**: This is intentional security feature
 
-### Admin functions returning errors
-- Ensure the database migration was applied successfully
-- Check the Supabase logs for detailed error messages
-- Verify RLS policies are enabled on the profiles table
+**Solution**:
+- This prevents accidental lockout
+- Have another admin revoke your role if needed
+- Or manually update the database with SQL
+
+### View toggle doesn't appear
+**Cause**: User.isAdmin() is returning false
+
+**Solution**:
+1. Open browser console (F12)
+2. Check for JavaScript errors
+3. Verify your role is 'admin' in database (see first troubleshooting item)
+4. Try clearing browser cache and logging in again
+
+### "Access Denied" message appears
+**Cause**: Either not logged in, or not an admin
+
+**Solution**:
+1. Make sure you're logged in
+2. Verify your account has role = 'admin' in database
+3. Check browser console for detailed error messages
+4. Ensure database functions were created (Step 1)
 
 ## Testing Checklist
 
