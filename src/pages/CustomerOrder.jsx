@@ -564,6 +564,36 @@ export default function CustomerOrder() {
 
   // Check if ordering is closed
   if (!isOrderingOpen()) {
+    const handleAuthRedirect = async () => {
+      try {
+        const user = await User.me();
+        if (user) {
+          // User is logged in, check if admin
+          try {
+            const isAdmin = await User.isAdmin();
+            if (isAdmin) {
+              // Redirect to admin dashboard
+              window.location.href = '/dashboard';
+            } else {
+              // Non-admin user, stay on closed page
+              alert("You're logged in, but ordering is currently closed. Please check back during our ordering hours.");
+            }
+          } catch (adminError) {
+            // Admin check failed (likely database not set up), redirect to dashboard anyway
+            console.warn('Admin check failed, redirecting to dashboard:', adminError);
+            window.location.href = '/dashboard';
+          }
+        } else {
+          // Not logged in, redirect to login
+          User.loginWithRedirect(window.location.href);
+        }
+      } catch (error) {
+        console.error('Error checking user status:', error);
+        // If error, redirect to login
+        User.loginWithRedirect(window.location.href);
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
         <div className="max-w-md mx-auto text-center">
@@ -583,23 +613,55 @@ export default function CustomerOrder() {
                 {orderingWindow?.message || "We're currently closed. Please check back during our ordering hours."}
               </p>
               {orderingWindow && orderingWindow.use_recurring_schedule && (
-                <div className="text-sm text-gray-500 space-y-1">
+                <div className="text-sm text-gray-500 space-y-1 mb-6">
                   <p>
                     <strong>Hours:</strong> {orderingWindow.open_time} - {orderingWindow.close_time}
                   </p>
                   <p>
-                    <strong>Days:</strong> {orderingWindow.days_of_week.map(day => 
+                    <strong>Days:</strong> {orderingWindow.days_of_week.map(day =>
                       day.charAt(0).toUpperCase() + day.slice(1)
                     ).join(', ')}
                   </p>
                 </div>
               )}
               {orderingWindow && !orderingWindow.use_recurring_schedule && (
-                <div className="text-sm text-gray-500 space-y-1">
+                <div className="text-sm text-gray-500 space-y-1 mb-6">
                   <p>
                     <strong>Available:</strong> {orderingWindow.open_date} {orderingWindow.open_time}
                      - {orderingWindow.close_date} {orderingWindow.close_time}
                   </p>
+                </div>
+              )}
+
+              {!currentUser && (
+                <div className="space-y-3 pt-4 border-t">
+                  <p className="text-sm text-gray-600 mb-4">
+                    Staff members can sign in to access the admin panel
+                  </p>
+                  <Button
+                    onClick={handleAuthRedirect}
+                    className="w-full bg-orange-600 hover:bg-orange-700"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign In / Sign Up
+                  </Button>
+                </div>
+              )}
+
+              {currentUser && (
+                <div className="space-y-3 pt-4 border-t">
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <p className="text-sm text-blue-900">
+                      Signed in as: <strong>{currentUser.email}</strong>
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleAuthRedirect}
+                    className="w-full bg-orange-600 hover:bg-orange-700"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Access Admin Panel
+                  </Button>
                 </div>
               )}
             </CardContent>
