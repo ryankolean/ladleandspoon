@@ -64,6 +64,20 @@ export default function Menu() {
     }
   };
 
+  const handleItemDelete = async (item) => {
+    if (!window.confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await MenuItem.delete(item.id);
+      loadMenuItems();
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+      alert("Failed to delete menu item. Please try again.");
+    }
+  };
+
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -121,6 +135,7 @@ export default function Menu() {
             items={filteredItems}
             isLoading={isLoading}
             onItemEdit={handleItemEdit}
+            onItemDelete={handleItemDelete}
             onToggleAvailability={handleToggleAvailability}
           />
 

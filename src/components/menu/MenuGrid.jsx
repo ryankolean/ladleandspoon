@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Edit, DollarSign } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 
@@ -15,7 +15,7 @@ const categoryColors = {
   box: "bg-green-100 text-green-800"
 };
 
-export default function MenuGrid({ items, isLoading, onItemEdit, onToggleAvailability }) {
+export default function MenuGrid({ items, isLoading, onItemEdit, onItemDelete, onToggleAvailability }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -123,7 +123,7 @@ export default function MenuGrid({ items, isLoading, onItemEdit, onToggleAvailab
                   )}
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <Button
                     variant="outline"
                     size="icon"
@@ -131,6 +131,14 @@ export default function MenuGrid({ items, isLoading, onItemEdit, onToggleAvailab
                     className="hover:bg-orange-50 hover:border-orange-200"
                   >
                     <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => onItemDelete(item)}
+                    className="hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </CardContent>
