@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/services';
-import { ShoppingCart, Soup, Sparkles, Heart, Clock, Truck } from 'lucide-react';
+import { ShoppingCart, Sparkles, Heart } from 'lucide-react';
 
 export default function CustomerHome() {
   const navigate = useNavigate();
@@ -64,38 +64,6 @@ export default function CustomerHome() {
             <ShoppingCart className="w-6 h-6 md:w-8 md:h-8" />
             Start Your Order
           </button>
-        </section>
-
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 py-12">
-          <div className="card-whimsy p-8 text-center hover-lift">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#F56949] to-[#BC5B22] rounded-full mb-6 shadow-lg">
-              <Soup className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-[#8B4513] mb-3">Fresh Daily</h3>
-            <p className="text-[#654321] text-lg">
-              Made fresh every morning with locally sourced ingredients and family recipes
-            </p>
-          </div>
-
-          <div className="card-whimsy p-8 text-center hover-lift">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#E6B85C] to-[#A0522D] rounded-full mb-6 shadow-lg">
-              <Clock className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-[#8B4513] mb-3">Order Ahead</h3>
-            <p className="text-[#654321] text-lg">
-              Place your order today for next-day delivery. Perfect for busy schedules
-            </p>
-          </div>
-
-          <div className="card-whimsy p-8 text-center hover-lift">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#FEC37D] to-[#808000] rounded-full mb-6 shadow-lg">
-              <Truck className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-[#8B4513] mb-3">We Deliver</h3>
-            <p className="text-[#654321] text-lg">
-              Fast, reliable delivery right to your doorstep. Free for orders over $30
-            </p>
-          </div>
         </section>
 
         <section className="py-12 text-center">
