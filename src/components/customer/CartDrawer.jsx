@@ -126,9 +126,6 @@ export default function CartDrawer() {
               Checkout
               <ArrowRight className="w-6 h-6" />
             </button>
-            <p className="text-center text-sm text-[#654321] mt-3">
-              Free delivery on orders over $30
-            </p>
           </div>
         )}
       </div>

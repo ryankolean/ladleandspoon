@@ -34,6 +34,10 @@ import CustomerHome from "./CustomerHome";
 
 import CustomerMenu from "./CustomerMenu";
 
+import Checkout from "./Checkout";
+
+import OrderSuccess from "./OrderSuccess";
+
 import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
@@ -93,7 +97,7 @@ function PagesContent() {
         return <ResetPassword />;
     }
 
-    const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout';
+    const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout' || location.pathname === '/order-success';
 
     if (isCustomerRoute) {
         return (
@@ -102,6 +106,8 @@ function PagesContent() {
                 <Routes>
                     <Route path="/" element={<CustomerHome />} />
                     <Route path="/order" element={<CustomerMenu />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order-success" element={<OrderSuccess />} />
                 </Routes>
             </>
         );

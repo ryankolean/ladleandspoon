@@ -53,6 +53,7 @@ export default function CustomerMenu() {
     setTimeout(() => {
       setAddedItems(prev => ({ ...prev, [key]: false }));
     }, 1000);
+    setIsCartOpen(true);
   };
 
   return (
