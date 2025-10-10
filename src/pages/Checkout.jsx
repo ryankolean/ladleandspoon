@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { User } from '@/services';
-import { ArrowLeft, CreditCard, Wallet } from 'lucide-react';
+import { ArrowLeft, CreditCard, Wallet, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import AddressAutocomplete from '@/components/customer/AddressAutocomplete';
 
@@ -16,10 +16,62 @@ export default function Checkout() {
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('venmo');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [deliveryDistance, setDeliveryDistance] = useState(null);
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+
+  const STORE_ADDRESS = "1247 Bielby Waterford, MI 48328";
+  const MAX_DELIVERY_DISTANCE_MILES = 10;
+
+  const calculateDistance = useCallback((destinationAddress) => {
+    if (!destinationAddress || !destinationAddress.lat || !destinationAddress.lng) {
+      setDeliveryDistance(null);
+      return;
+    }
+
+    setIsCalculatingDistance(true);
+    try {
+      const calculateHaversineDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 3959;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+
+      const storeLat = 42.6725;
+      const storeLng = -83.3799;
+
+      const distance = calculateHaversineDistance(
+        storeLat,
+        storeLng,
+        destinationAddress.lat,
+        destinationAddress.lng
+      );
+
+      setDeliveryDistance(distance);
+    } catch (error) {
+      console.error("Error calculating distance:", error);
+      setDeliveryDistance(null);
+    } finally {
+      setIsCalculatingDistance(false);
+    }
+  }, []);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (deliveryAddress && deliveryAddress.lat && deliveryAddress.lng && !deliveryAddress.manual) {
+      calculateDistance(deliveryAddress);
+    } else {
+      setDeliveryDistance(null);
+    }
+  }, [deliveryAddress, calculateDistance]);
 
   const checkAuth = async () => {
     try {
@@ -167,6 +219,37 @@ export default function Checkout() {
                     onAddressChange={setDeliveryAddress}
                     error={addressError}
                   />
+
+                  {isCalculatingDistance && (
+                    <div className="mt-2 text-sm text-[#654321]">
+                      Calculating distance...
+                    </div>
+                  )}
+
+                  {deliveryDistance !== null && !isCalculatingDistance && (
+                    <div className="mt-2">
+                      <div className={`text-sm font-medium ${
+                        deliveryDistance <= MAX_DELIVERY_DISTANCE_MILES ? 'text-green-600' : 'text-[#F56949]'
+                      }`}>
+                        Distance from {STORE_ADDRESS}: {deliveryDistance.toFixed(1)} miles
+                      </div>
+                      {deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
+                        <div className="mt-3 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-semibold text-amber-900 mb-1">
+                              Outside Standard Delivery Area
+                            </p>
+                            <p className="text-sm text-amber-800">
+                              Your address is beyond our standard {MAX_DELIVERY_DISTANCE_MILES}-mile delivery radius.
+                              Your order will need to be confirmed by our team before it can be completed.
+                              We'll contact you shortly to arrange delivery.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div>
