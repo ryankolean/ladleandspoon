@@ -141,14 +141,14 @@ export default function WhimsicalLogin() {
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
+                  <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="John Doe"
                     required={isSignUp}
-                    className="input-whimsy pl-14"
+                    className="input-whimsy !pl-16 pr-4"
                   />
                 </div>
               </div>
@@ -159,14 +159,14 @@ export default function WhimsicalLogin() {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="input-whimsy pl-14"
+                  className="input-whimsy !pl-16 pr-4"
                 />
               </div>
             </div>
@@ -176,14 +176,14 @@ export default function WhimsicalLogin() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="input-whimsy pl-14"
+                  className="input-whimsy !pl-16 pr-4"
                 />
               </div>
             </div>
