@@ -8,8 +8,9 @@ import { Clock, DollarSign, Users, CreditCard, CheckCircle, Mail, Phone } from "
 import { format } from "date-fns";
 
 const statusColors = {
+  pending_payment: "bg-orange-100 text-orange-800 border-orange-200",
   pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  preparing: "bg-blue-100 text-blue-800 border-blue-200", 
+  preparing: "bg-blue-100 text-blue-800 border-blue-200",
   ready: "bg-green-100 text-green-800 border-green-200",
   completed: "bg-gray-100 text-gray-800 border-gray-200"
 };
@@ -22,8 +23,9 @@ const paymentStatusColors = {
 };
 
 const nextStatus = {
+  pending_payment: "pending",
   pending: "preparing",
-  preparing: "ready", 
+  preparing: "ready",
   ready: "completed"
 };
 
@@ -91,10 +93,10 @@ export default function OrderDetails({ order, onOrderUpdate }) {
                   <span>{order.customer_email}</span>
                 </div>
               )}
-              {order.phone && (
+              {order.customer_phone && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Phone className="w-3 h-3" />
-                  <span>{order.phone}</span>
+                  <span>{order.customer_phone}</span>
                 </div>
               )}
               {order.is_guest && (
@@ -134,17 +136,21 @@ export default function OrderDetails({ order, onOrderUpdate }) {
 
         {/* Order Total */}
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span>Subtotal:</span>
-            <span>${order.subtotal?.toFixed(2) || '0.00'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Tax:</span>
-            <span>${order.tax?.toFixed(2) || '0.00'}</span>
-          </div>
+          {order.tax_amount > 0 && (
+            <div className="flex justify-between">
+              <span>Tax:</span>
+              <span>${order.tax_amount?.toFixed(2) || '0.00'}</span>
+            </div>
+          )}
+          {order.delivery_fee > 0 && (
+            <div className="flex justify-between">
+              <span>Delivery Fee:</span>
+              <span>${order.delivery_fee?.toFixed(2) || '0.00'}</span>
+            </div>
+          )}
           <div className="flex justify-between font-bold text-lg">
             <span>Total:</span>
-            <span>${order.total?.toFixed(2)}</span>
+            <span>${order.total_amount?.toFixed(2)}</span>
           </div>
         </div>
 

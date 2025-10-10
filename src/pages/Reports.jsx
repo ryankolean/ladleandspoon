@@ -60,7 +60,7 @@ export default function Reports() {
   const calculateStats = () => {
     const totalRevenue = filteredOrders
       .filter(order => order.payment_status === 'paid')
-      .reduce((sum, order) => sum + (order.total || 0), 0);
+      .reduce((sum, order) => sum + (order.total_amount || 0), 0);
     
     const totalOrders = filteredOrders.length;
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;

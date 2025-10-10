@@ -144,13 +144,6 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      const orderItems = cart.map(item => ({
-        menu_item_id: item.id,
-        quantity: item.quantity,
-        price_at_time: item.variant ? item.variant.price : item.price,
-        variant_name: item.variant?.name || null
-      }));
-
       if (!user.phone || user.phone !== phoneNumber) {
         await supabase
           .from('profiles')
@@ -158,31 +151,32 @@ export default function Checkout() {
           .eq('id', user.id);
       }
 
+      const orderItems = cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.variant ? item.variant.price : item.price,
+        variant: item.variant?.name || null
+      }));
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
-          customer_id: user.id,
+          user_id: user.id,
+          customer_name: user.full_name || user.email,
+          customer_phone: phoneNumber,
+          customer_email: user.email,
+          customer_address: deliveryAddress.formatted_address,
+          items: orderItems,
           total_amount: getCartTotal(),
           status: paymentMethod === 'venmo' ? 'pending_payment' : 'pending',
           payment_method: paymentMethod,
-          delivery_address: deliveryAddress.formatted_address,
-          delivery_notes: deliveryNotes
+          notes: deliveryNotes
         })
         .select()
         .single();
 
       if (orderError) throw orderError;
-
-      const orderItemsWithOrderId = orderItems.map(item => ({
-        ...item,
-        order_id: order.id
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItemsWithOrderId);
-
-      if (itemsError) throw itemsError;
 
       if (paymentMethod === 'venmo') {
         setPendingOrderId(order.id);

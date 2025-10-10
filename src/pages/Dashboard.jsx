@@ -60,7 +60,7 @@ export default function Dashboard() {
   const calculateStats = () => {
     const todayRevenue = todaysOrders
       .filter(order => order.payment_status === 'paid')
-      .reduce((sum, order) => sum + (order.total || 0), 0);
+      .reduce((sum, order) => sum + (order.total_amount || 0), 0);
     
     const avgOrderValue = todaysOrders.length > 0 
       ? todayRevenue / todaysOrders.length 

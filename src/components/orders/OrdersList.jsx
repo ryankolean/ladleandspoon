@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 
 const statusColors = {
+  pending_payment: "bg-orange-100 text-orange-800 border-orange-200",
   pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
   preparing: "bg-blue-100 text-blue-800 border-blue-200",
   ready: "bg-green-100 text-green-800 border-green-200",
@@ -65,7 +66,7 @@ export default function OrdersList({ orders, isLoading, onOrderSelect, onOrderUp
                       {format(new Date(order.created_at), "HH:mm")}
                       <span>•</span>
                       <DollarSign className="w-3 h-3" />
-                      ${order.total?.toFixed(2)}
+                      ${order.total_amount?.toFixed(2)}
                     </div>
                   </div>
                 </div>
