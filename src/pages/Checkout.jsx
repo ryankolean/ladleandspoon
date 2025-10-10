@@ -18,6 +18,7 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [deliveryDistance, setDeliveryDistance] = useState(null);
   const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [showVenmoConfirmation, setShowVenmoConfirmation] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState(null);
@@ -101,6 +102,8 @@ export default function Checkout() {
           place_id: addresses.place_id
         });
       }
+
+      setPhoneNumber(currentUser.phone || '');
     } catch (error) {
       navigate('/login?redirect=/checkout');
     } finally {
@@ -119,8 +122,14 @@ export default function Checkout() {
       return;
     }
 
-    if (!user.phone || user.phone.trim() === '') {
-      setPhoneError('Phone number is required. Please add your phone number in Settings.');
+    if (!phoneNumber || phoneNumber.trim() === '') {
+      setPhoneError('Please enter your phone number');
+      return;
+    }
+
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      setPhoneError('Please enter a valid 10-digit phone number');
       return;
     }
 
@@ -141,6 +150,13 @@ export default function Checkout() {
         price_at_time: item.variant ? item.variant.price : item.price,
         variant_name: item.variant?.name || null
       }));
+
+      if (!user.phone || user.phone !== phoneNumber) {
+        await supabase
+          .from('profiles')
+          .update({ phone: phoneNumber })
+          .eq('id', user.id);
+      }
 
       const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -299,19 +315,26 @@ export default function Checkout() {
 
               <div className="space-y-4">
                 <div>
+                  <label className="block text-sm font-semibold text-[#8B4513] mb-2">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => {
+                      const formatted = e.target.value.replace(/[^0-9()-\s]/g, '');
+                      setPhoneNumber(formatted);
+                      setPhoneError('');
+                    }}
+                    placeholder="(555) 555-5555"
+                    className="input-whimsy"
+                  />
                   {phoneError && (
-                    <div className="mb-4 p-4 bg-red-50 border-2 border-red-300 rounded-2xl">
-                      <p className="text-sm font-semibold text-red-900 mb-1">Phone Number Required</p>
-                      <p className="text-sm text-red-800">{phoneError}</p>
-                      <button
-                        onClick={() => navigate('/settings')}
-                        className="mt-2 text-sm font-semibold text-red-700 hover:text-red-900 underline"
-                      >
-                        Go to Settings →
-                      </button>
-                    </div>
+                    <p className="mt-1 text-sm text-[#F56949]">{phoneError}</p>
                   )}
+                </div>
 
+                <div>
                   <AddressAutocomplete
                     value={deliveryAddress}
                     onAddressChange={setDeliveryAddress}
