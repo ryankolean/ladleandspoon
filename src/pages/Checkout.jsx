@@ -242,8 +242,7 @@ export default function Checkout() {
                             </p>
                             <p className="text-sm text-amber-800">
                               Your address is beyond our standard {MAX_DELIVERY_DISTANCE_MILES}-mile delivery radius.
-                              Your order will need to be confirmed by our team before it can be completed.
-                              We'll contact you shortly to arrange delivery.
+                              Place your order and we will contact you to confirm delivery.
                             </p>
                           </div>
                         </div>
