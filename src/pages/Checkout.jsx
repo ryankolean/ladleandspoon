@@ -18,9 +18,13 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [deliveryDistance, setDeliveryDistance] = useState(null);
   const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
+  const [showVenmoConfirmation, setShowVenmoConfirmation] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState(null);
 
   const STORE_ADDRESS = "1247 Bielby Waterford, MI 48328";
   const MAX_DELIVERY_DISTANCE_MILES = 10;
+  const VENMO_URL = "https://venmo.com/code?user_id=3074328371396608676&created=1759075169";
 
   const calculateDistance = useCallback((destinationAddress) => {
     if (!destinationAddress || !destinationAddress.lat || !destinationAddress.lng) {
@@ -115,7 +119,13 @@ export default function Checkout() {
       return;
     }
 
+    if (!user.phone || user.phone.trim() === '') {
+      setPhoneError('Phone number is required. Please add your phone number in Settings.');
+      return;
+    }
+
     setAddressError('');
+    setPhoneError('');
 
     if (cart.length === 0) {
       alert('Your cart is empty');
@@ -137,7 +147,7 @@ export default function Checkout() {
         .insert({
           customer_id: user.id,
           total_amount: getCartTotal(),
-          status: 'pending',
+          status: paymentMethod === 'venmo' ? 'pending_payment' : 'pending',
           payment_method: paymentMethod,
           delivery_address: deliveryAddress.formatted_address,
           delivery_notes: deliveryNotes
@@ -158,8 +168,13 @@ export default function Checkout() {
 
       if (itemsError) throw itemsError;
 
-      clearCart();
-      navigate('/order-success', { state: { orderId: order.id } });
+      if (paymentMethod === 'venmo') {
+        setPendingOrderId(order.id);
+        setShowVenmoConfirmation(true);
+      } else {
+        clearCart();
+        navigate('/order-success', { state: { orderId: order.id } });
+      }
     } catch (error) {
       console.error('Order error:', error);
       alert('Failed to place order. Please try again.');
@@ -167,6 +182,76 @@ export default function Checkout() {
       setIsProcessing(false);
     }
   };
+
+  const handleVenmoPaymentComplete = async () => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'pending' })
+        .eq('id', pendingOrderId);
+
+      if (error) throw error;
+
+      clearCart();
+      navigate('/order-success', { state: { orderId: pendingOrderId } });
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      alert('Error confirming payment. Please contact us.');
+    }
+  };
+
+  const handleVenmoCancel = () => {
+    setShowVenmoConfirmation(false);
+    setPendingOrderId(null);
+  };
+
+  if (showVenmoConfirmation) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#FFF8F0] to-[#FFE4CC]">
+        <div className="card-whimsy p-8 max-w-lg w-full text-center space-y-6">
+          <div className="text-6xl mb-4">💳</div>
+          <h2 className="text-3xl font-bold text-[#8B4513]">Complete Your Payment</h2>
+
+          <div className="bg-[#FFF8F0] p-6 rounded-2xl border-2 border-[#DEB887]">
+            <p className="text-lg font-semibold text-[#8B4513] mb-2">Order Total</p>
+            <p className="text-4xl font-bold text-[#F56949]">${getCartTotal().toFixed(2)}</p>
+          </div>
+
+          <div className="space-y-4 text-left bg-[#FFF8F0] p-6 rounded-2xl border-2 border-[#DEB887]">
+            <p className="text-[#654321] font-medium">To complete your order:</p>
+            <ol className="list-decimal list-inside space-y-2 text-[#654321]">
+              <li>Click the button below to open Venmo</li>
+              <li>Complete the payment of <strong>${getCartTotal().toFixed(2)}</strong></li>
+              <li>Return here and click "I've Completed Payment"</li>
+            </ol>
+          </div>
+
+          <a
+            href={VENMO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary w-full inline-block text-center"
+          >
+            Open Venmo to Pay ${getCartTotal().toFixed(2)}
+          </a>
+
+          <button
+            onClick={handleVenmoPaymentComplete}
+            className="w-full py-3 px-6 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-300 shadow-md hover:shadow-xl"
+          >
+            I've Completed Payment
+          </button>
+
+          <button
+            onClick={handleVenmoCancel}
+            className="w-full text-[#654321] hover:text-[#8B4513] font-medium"
+          >
+            Cancel Order
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -214,6 +299,19 @@ export default function Checkout() {
 
               <div className="space-y-4">
                 <div>
+                  {phoneError && (
+                    <div className="mb-4 p-4 bg-red-50 border-2 border-red-300 rounded-2xl">
+                      <p className="text-sm font-semibold text-red-900 mb-1">Phone Number Required</p>
+                      <p className="text-sm text-red-800">{phoneError}</p>
+                      <button
+                        onClick={() => navigate('/settings')}
+                        className="mt-2 text-sm font-semibold text-red-700 hover:text-red-900 underline"
+                      >
+                        Go to Settings →
+                      </button>
+                    </div>
+                  )}
+
                   <AddressAutocomplete
                     value={deliveryAddress}
                     onAddressChange={setDeliveryAddress}
