@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://sgpsqlwggwtzmydntvny.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNncHNxbHdnZ3d0em15ZG50dm55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3Njk1OTcsImV4cCI6MjA3NTM0NTU5N30.XPkjbbax9WVpudvK8KlqNCCXFNbZ9iUrU8VicurnZDI';
 
 const SESSION_TIMEOUT_MINUTES = 60;
 const REMEMBER_ME_DAYS = 30;
