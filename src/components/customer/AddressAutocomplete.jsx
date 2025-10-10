@@ -138,11 +138,6 @@ export default function AddressAutocomplete({ onAddressChange, value, error }) {
       {validationStatus === 'valid' && !apiLoadError && (
         <p className="text-sm text-green-600">✓ Valid address selected</p>
       )}
-      {!apiLoadError && (
-        <p className="text-xs text-gray-500">
-          Select your address from the dropdown for accurate delivery
-        </p>
-      )}
     </div>
   );
 }
