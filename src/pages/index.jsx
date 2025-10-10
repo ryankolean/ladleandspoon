@@ -22,11 +22,19 @@ import Profile from "./Profile";
 
 import Login from "./Login";
 
+import WhimsicalLogin from "./WhimsicalLogin";
+
 import AuthCallback from "./AuthCallback";
 
 import ResetPassword from "./ResetPassword";
 
 import UserManagement from "./UserManagement";
+
+import CustomerHome from "./CustomerHome";
+
+import CustomerMenu from "./CustomerMenu";
+
+import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -69,13 +77,12 @@ function _getCurrentPage(url) {
     return pageName || Object.keys(PAGES)[0];
 }
 
-// Create a wrapper component that uses useLocation inside the Router context
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
 
     if (location.pathname === '/login') {
-        return <Login />;
+        return <WhimsicalLogin />;
     }
 
     if (location.pathname === '/auth/callback') {
@@ -86,10 +93,23 @@ function PagesContent() {
         return <ResetPassword />;
     }
 
+    const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout';
+
+    if (isCustomerRoute) {
+        return (
+            <>
+                <WhimsicalHeader />
+                <Routes>
+                    <Route path="/" element={<CustomerHome />} />
+                    <Route path="/order" element={<CustomerMenu />} />
+                </Routes>
+            </>
+        );
+    }
+
     return (
         <Layout currentPageName={currentPage}>
             <Routes>
-                <Route path="/" element={<CustomerOrder />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/deliveryroute" element={<DeliveryRoute />} />

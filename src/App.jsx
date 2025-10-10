@@ -2,7 +2,8 @@ import './App.css'
 import Pages from "@/pages/index.jsx"
 import { Toaster } from "sonner"
 import { supabase } from "@/lib/supabase"
-import { Coffee, AlertCircle } from "lucide-react"
+import { CartProvider } from "@/contexts/CartContext"
+import { AlertCircle } from "lucide-react"
 
 function App() {
   if (!supabase) {
@@ -36,10 +37,10 @@ function App() {
   }
 
   return (
-    <>
+    <CartProvider>
       <Pages />
       <Toaster />
-    </>
+    </CartProvider>
   )
 }
 
