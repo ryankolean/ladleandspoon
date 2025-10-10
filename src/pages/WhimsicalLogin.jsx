@@ -141,49 +141,49 @@ export default function WhimsicalLogin() {
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="John Doe"
                     required={isSignUp}
-                    className="input-whimsy pl-12"
+                    className="input-whimsy pl-14"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-semibold text-[#2D3748] mb-2">
+              <label className="block text-sm font-semibold text-[#8B4513] mb-2">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="input-whimsy pl-12"
+                  className="input-whimsy pl-14"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#2D3748] mb-2">
+              <label className="block text-sm font-semibold text-[#8B4513] mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="input-whimsy pl-12"
+                  className="input-whimsy pl-14"
                 />
               </div>
             </div>
