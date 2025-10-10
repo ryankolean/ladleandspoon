@@ -38,6 +38,8 @@ import Checkout from "./Checkout";
 
 import OrderSuccess from "./OrderSuccess";
 
+import MyOrders from "./MyOrders";
+
 import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
@@ -106,6 +108,7 @@ function PagesContent() {
                 <Routes>
                     <Route path="/" element={<CustomerHome />} />
                     <Route path="/order" element={<CustomerMenu />} />
+                    <Route path="/my-orders" element={<MyOrders />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/order-success" element={<OrderSuccess />} />
                 </Routes>
