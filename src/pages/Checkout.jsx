@@ -4,13 +4,15 @@ import { useCart } from '@/contexts/CartContext';
 import { User } from '@/services';
 import { ArrowLeft, CreditCard, Wallet } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import AddressAutocomplete from '@/components/customer/AddressAutocomplete';
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [deliveryAddress, setDeliveryAddress] = useState(null);
+  const [addressError, setAddressError] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('venmo');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,7 +38,12 @@ export default function Checkout() {
         .maybeSingle();
 
       if (addresses) {
-        setDeliveryAddress(addresses.formatted_address || addresses.street_address);
+        setDeliveryAddress({
+          formatted_address: addresses.formatted_address || addresses.street_address,
+          lat: addresses.latitude,
+          lng: addresses.longitude,
+          place_id: addresses.place_id
+        });
       }
     } catch (error) {
       navigate('/login?redirect=/checkout');
@@ -46,10 +53,17 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
-    if (!deliveryAddress.trim()) {
-      alert('Please enter a delivery address');
+    if (!deliveryAddress || !deliveryAddress.formatted_address) {
+      setAddressError('Please select a valid delivery address from the suggestions');
       return;
     }
+
+    if (deliveryAddress.manual) {
+      setAddressError('Please select an address from the dropdown suggestions');
+      return;
+    }
+
+    setAddressError('');
 
     if (cart.length === 0) {
       alert('Your cart is empty');
@@ -73,7 +87,7 @@ export default function Checkout() {
           total_amount: getCartTotal(),
           status: 'pending',
           payment_method: paymentMethod,
-          delivery_address: deliveryAddress,
+          delivery_address: deliveryAddress.formatted_address,
           delivery_notes: deliveryNotes
         })
         .select()
@@ -148,16 +162,10 @@ export default function Checkout() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#8B4513] mb-2">
-                    Delivery Address *
-                  </label>
-                  <textarea
+                  <AddressAutocomplete
                     value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    placeholder="Enter your full delivery address"
-                    rows={3}
-                    className="input-whimsy resize-none"
-                    required
+                    onAddressChange={setDeliveryAddress}
+                    error={addressError}
                   />
                 </div>
 
@@ -256,7 +264,7 @@ export default function Checkout() {
 
               <button
                 onClick={handlePlaceOrder}
-                disabled={isProcessing || !deliveryAddress.trim()}
+                disabled={isProcessing || !deliveryAddress?.formatted_address}
                 className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? (

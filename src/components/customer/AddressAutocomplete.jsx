@@ -89,8 +89,14 @@ export default function AddressAutocomplete({ onAddressChange, value, error }) {
   }, [isLoaded, handlePlaceSelect]);
 
   const handleInputChange = (e) => {
+    const inputValue = e.target.value;
     setValidationStatus(null);
-    onAddressChange({ formatted_address: e.target.value, manual: true });
+
+    if (inputValue.trim() === '') {
+      onAddressChange(null);
+    } else {
+      onAddressChange({ formatted_address: inputValue, manual: true });
+    }
   };
 
   return (
@@ -127,7 +133,10 @@ export default function AddressAutocomplete({ onAddressChange, value, error }) {
         <p className="text-sm text-red-600">{error}</p>
       )}
       {validationStatus === 'invalid' && !apiLoadError && (
-        <p className="text-sm text-red-600">Please select a valid address from the suggestions</p>
+        <p className="text-sm text-red-600">Please select a valid address from the dropdown suggestions</p>
+      )}
+      {validationStatus === 'valid' && !apiLoadError && (
+        <p className="text-sm text-green-600">✓ Valid address selected</p>
       )}
       {!apiLoadError && (
         <p className="text-xs text-gray-500">
