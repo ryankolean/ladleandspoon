@@ -57,7 +57,7 @@ export default function CustomerMenu() {
 
   return (
     <div className="min-h-screen pb-8">
-      <div className="bg-gradient-to-r from-[#65DBFF] to-[#8EFFE4] py-12 px-4 mb-8">
+      <div className="bg-gradient-to-r from-[#F56949] to-[#FEC37D] py-12 px-4 mb-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 text-shadow-sm">
             Today's Menu
@@ -108,7 +108,7 @@ export default function CustomerMenu() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map(item => (
               <div key={item.id} className="card-whimsy overflow-hidden hover-lift">
-                <div className="h-56 bg-gradient-to-br from-[#D2F3F8] to-[#B6FFE0] flex items-center justify-center relative overflow-hidden">
+                <div className="h-56 bg-gradient-to-br from-[#FEC37D] to-[#E6B85C] flex items-center justify-center relative overflow-hidden">
                   {item.image_url ? (
                     <img
                       src={item.image_url}
@@ -123,10 +123,10 @@ export default function CustomerMenu() {
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold text-[#2D3748] mb-2">
+                  <h3 className="text-2xl font-bold text-[#8B4513] mb-2">
                     {item.name}
                   </h3>
-                  <p className="text-[#4A5568] mb-4 line-clamp-2">
+                  <p className="text-[#654321] mb-4 line-clamp-2">
                     {item.description || 'A delicious homemade creation'}
                   </p>
 
@@ -135,11 +135,11 @@ export default function CustomerMenu() {
                       {item.variants.map((variant, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#D2F3F8]/30 to-[#B6FFE0]/30"
+                          className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#FEC37D]/30 to-[#E6B85C]/30"
                         >
                           <div className="flex-1">
-                            <span className="font-semibold text-[#2D3748]">{variant.name}</span>
-                            <span className="text-[#FF6B6B] font-bold ml-3">
+                            <span className="font-semibold text-[#8B4513]">{variant.name}</span>
+                            <span className="text-[#F56949] font-bold ml-3">
                               ${variant.price.toFixed(2)}
                             </span>
                           </div>
@@ -148,8 +148,8 @@ export default function CustomerMenu() {
                               onClick={() => handleAddToCart(item, variant)}
                               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                                 addedItems[`${item.id}-${variant.name}`]
-                                  ? 'bg-[#8EFFE4] scale-110'
-                                  : 'bg-[#FF6B6B] hover:bg-[#ff5252] hover:scale-110'
+                                  ? 'bg-[#808000] scale-110'
+                                  : 'bg-[#F56949] hover:bg-[#BC5B22] hover:scale-110'
                               }`}
                             >
                               {addedItems[`${item.id}-${variant.name}`] ? (
@@ -159,14 +159,14 @@ export default function CustomerMenu() {
                               )}
                             </button>
                           ) : (
-                            <span className="text-sm text-[#FF6B6B] font-medium">Sold Out</span>
+                            <span className="text-sm text-[#F56949] font-medium">Sold Out</span>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span className="text-3xl font-bold text-[#FF6B6B]">
+                      <span className="text-3xl font-bold text-[#F56949]">
                         ${item.price.toFixed(2)}
                       </span>
                       {item.units_available > 0 ? (
@@ -174,8 +174,8 @@ export default function CustomerMenu() {
                           onClick={() => handleAddToCart(item)}
                           className={`px-6 py-3 rounded-full font-semibold flex items-center gap-2 transition-all ${
                             addedItems[item.id]
-                              ? 'bg-[#8EFFE4] scale-110'
-                              : 'bg-[#FF6B6B] hover:bg-[#ff5252] hover:scale-110 text-white'
+                              ? 'bg-[#808000] scale-110'
+                              : 'bg-[#F56949] hover:bg-[#BC5B22] hover:scale-110 text-white'
                           }`}
                         >
                           {addedItems[item.id] ? (
@@ -191,13 +191,13 @@ export default function CustomerMenu() {
                           )}
                         </button>
                       ) : (
-                        <span className="text-lg text-[#FF6B6B] font-semibold">Sold Out</span>
+                        <span className="text-lg text-[#F56949] font-semibold">Sold Out</span>
                       )}
                     </div>
                   )}
 
                   {item.units_available <= 5 && item.units_available > 0 && (
-                    <p className="text-sm text-[#FF6B6B] mt-3 font-medium">
+                    <p className="text-sm text-[#F56949] mt-3 font-medium">
                       Only {item.units_available} left!
                     </p>
                   )}

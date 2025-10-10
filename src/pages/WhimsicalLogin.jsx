@@ -74,19 +74,19 @@ export default function WhimsicalLogin() {
           <div className="inline-block text-8xl mb-4 animate-float steam-effect">
             🥄
           </div>
-          <h1 className="text-4xl font-bold text-[#2D3748] mb-2">
+          <h1 className="text-4xl font-bold text-[#8B4513] mb-2">
             Welcome to <span className="gradient-text">Ladle & Spoon</span>
           </h1>
-          <p className="text-[#4A5568] text-lg">
-            Sign in to order delicious soups & baked goods
+          <p className="text-[#654321] text-lg">
+            Sign in to order delicious soups &amp; baked goods
           </p>
         </div>
 
         <div className="modal-content p-8">
           {error && (
-            <div className="mb-6 p-4 bg-[#FF6B6B]/10 border-2 border-[#FF6B6B] rounded-2xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-[#FF6B6B] flex-shrink-0 mt-0.5" />
-              <p className="text-[#FF6B6B] text-sm font-medium">{error}</p>
+            <div className="mb-6 p-4 bg-[#F56949]/10 border-2 border-[#F56949] rounded-2xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-[#F56949] flex-shrink-0 mt-0.5" />
+              <p className="text-[#F56949] text-sm font-medium">{error}</p>
             </div>
           )}
 
@@ -95,8 +95,8 @@ export default function WhimsicalLogin() {
               onClick={() => setIsSignUp(false)}
               className={`flex-1 py-3 rounded-2xl font-semibold transition-all ${
                 !isSignUp
-                  ? 'bg-[#FF6B6B] text-white shadow-lg'
-                  : 'bg-gray-100 text-[#4A5568] hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-[#F56949] to-[#BC5B22] text-white shadow-lg'
+                  : 'bg-[#F5E6D3] text-[#8B4513] hover:bg-[#E6B85C]/30'
               }`}
             >
               Sign In
@@ -105,8 +105,8 @@ export default function WhimsicalLogin() {
               onClick={() => setIsSignUp(true)}
               className={`flex-1 py-3 rounded-2xl font-semibold transition-all ${
                 isSignUp
-                  ? 'bg-[#FF6B6B] text-white shadow-lg'
-                  : 'bg-gray-100 text-[#4A5568] hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-[#F56949] to-[#BC5B22] text-white shadow-lg'
+                  : 'bg-[#F5E6D3] text-[#8B4513] hover:bg-[#E6B85C]/30'
               }`}
             >
               Sign Up
@@ -116,11 +116,11 @@ export default function WhimsicalLogin() {
           <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
             {isSignUp && (
               <div>
-                <label className="block text-sm font-semibold text-[#2D3748] mb-2">
+                <label className="block text-sm font-semibold text-[#8B4513] mb-2">
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A5568]" />
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
                   <input
                     type="text"
                     value={fullName}
@@ -138,7 +138,7 @@ export default function WhimsicalLogin() {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A5568]" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
                 <input
                   type="email"
                   value={email}
@@ -155,7 +155,7 @@ export default function WhimsicalLogin() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A5568]" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321]" />
                 <input
                   type="password"
                   value={password}
@@ -174,9 +174,9 @@ export default function WhimsicalLogin() {
                   id="remember"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#B6FFE0] text-[#FF6B6B] focus:ring-[#65DBFF]"
+                  className="w-4 h-4 rounded border-[#DEB887] text-[#F56949] focus:ring-[#F56949]"
                 />
-                <label htmlFor="remember" className="text-sm text-[#4A5568] font-medium">
+                <label htmlFor="remember" className="text-sm text-[#654321] font-medium">
                   Remember me for 30 days
                 </label>
               </div>
@@ -202,17 +202,17 @@ export default function WhimsicalLogin() {
             <div className="mt-4 text-center">
               <button
                 onClick={() => navigate('/reset-password')}
-                className="text-[#65DBFF] hover:text-[#4A5568] font-medium text-sm transition-colors"
+                className="text-[#F56949] hover:text-[#BC5B22] font-medium text-sm transition-colors"
               >
                 Forgot your password?
               </button>
             </div>
           )}
 
-          <div className="mt-6 text-center text-sm text-[#4A5568]">
+          <div className="mt-6 text-center text-sm text-[#654321]">
             <button
               onClick={() => navigate('/')}
-              className="hover:text-[#2D3748] font-medium transition-colors"
+              className="hover:text-[#8B4513] font-medium transition-colors"
             >
               ← Back to Home
             </button>

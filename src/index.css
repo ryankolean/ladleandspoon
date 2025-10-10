@@ -6,35 +6,38 @@
 
 @layer base {
   :root {
-    --powder-blue: #D2F3F8;
-    --mint-green: #B6FFE0;
-    --pastel-teal: #65DBFF;
-    --grass-green: #8EFFE4;
-    --lemon-yellow: #FFE66D;
-    --coral: #FF6B6B;
-    --soft-white: #FAFFFE;
-    --charcoal: #2D3748;
-    --gray-text: #4A5568;
+    --warm-cream: #F8F3F0;
+    --soft-pumpkin: #FEC37D;
+    --burnt-orange: #F56949;
+    --warm-terracotta: #BC5B22;
+    --golden-mustard: #E6B85C;
+    --deep-autumn-red: #A0522D;
+    --rich-brown: #8B4513;
+    --olive-green: #808000;
+    --warm-beige: #F5E6D3;
+    --text-primary: #8B4513;
+    --text-secondary: #654321;
+    --border-color: #DEB887;
 
-    --background: 210 100% 96%;
-    --foreground: 210 11% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --background: 30 25% 97%;
+    --foreground: 25 47% 32%;
+    --card: 35 33% 95%;
+    --card-foreground: 25 47% 32%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
-    --primary: 4 86% 70%;
+    --popover-foreground: 25 47% 32%;
+    --primary: 14 88% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 186 100% 70%;
-    --secondary-foreground: 210 11% 15%;
-    --muted: 186 100% 85%;
-    --muted-foreground: 210 11% 40%;
-    --accent: 48 100% 72%;
-    --accent-foreground: 210 11% 15%;
-    --destructive: 0 84% 60%;
+    --secondary: 25 61% 56%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 35 33% 92%;
+    --muted-foreground: 30 20% 45%;
+    --accent: 42 70% 62%;
+    --accent-foreground: 25 47% 32%;
+    --destructive: 16 55% 41%;
     --destructive-foreground: 0 0% 98%;
-    --border: 186 40% 85%;
-    --input: 186 40% 85%;
-    --ring: 4 86% 70%;
+    --border: 35 33% 85%;
+    --input: 35 33% 85%;
+    --ring: 14 88% 62%;
     --radius: 1rem;
   }
 
@@ -43,7 +46,7 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-[#D2F3F8] via-[#B6FFE0] to-[#D2F3F8] text-foreground;
+    @apply bg-gradient-to-br from-[#F8F3F0] via-[#FEC37D] to-[#F8F3F0] text-foreground;
     font-family: 'Quicksand', sans-serif;
     min-height: 100vh;
   }
@@ -56,15 +59,15 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-[#FF6B6B] text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-out;
+    @apply bg-gradient-to-r from-[#F56949] to-[#BC5B22] text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-out;
   }
 
   .btn-secondary {
-    @apply bg-[#65DBFF] text-[#2D3748] font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-out;
+    @apply bg-[#808000] text-white font-semibold px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-out;
   }
 
   .card-whimsy {
-    @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-out;
+    @apply bg-[#F5E6D3]/90 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-out;
   }
 
   .pill-button {
@@ -72,11 +75,11 @@
   }
 
   .pill-button-active {
-    @apply bg-[#FF6B6B] text-white shadow-lg scale-105;
+    @apply bg-gradient-to-r from-[#F56949] to-[#BC5B22] text-white shadow-lg scale-105;
   }
 
   .pill-button-inactive {
-    @apply bg-white/70 text-[#4A5568] hover:bg-white hover:shadow-md hover:scale-105;
+    @apply bg-[#F5E6D3]/70 text-[#8B4513] hover:bg-[#F5E6D3] hover:shadow-md hover:scale-105;
   }
 }
 
@@ -86,7 +89,7 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-[#FF6B6B] to-[#FFE66D] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#F56949] to-[#E6B85C] bg-clip-text text-transparent;
   }
 }
 
@@ -124,10 +127,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 0 20px rgba(245, 105, 73, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+    box-shadow: 0 0 30px rgba(245, 105, 73, 0.6);
   }
 }
 
@@ -233,7 +236,7 @@
   left: 50%;
   width: 30px;
   height: 30px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(254, 195, 125, 0.6) 0%, transparent 70%);
   border-radius: 50%;
   animation: steam 3s ease-in-out infinite;
 }
@@ -254,7 +257,7 @@
 }
 
 .cart-badge {
-  @apply absolute -top-2 -right-2 bg-[#FF6B6B] text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg;
+  @apply absolute -top-2 -right-2 bg-[#F56949] text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg;
   animation: scale-in 0.3s ease-out;
 }
 
@@ -264,12 +267,12 @@
 }
 
 .modal-content {
-  @apply bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden;
+  @apply bg-[#F8F3F0] rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden;
   animation: scale-in 0.3s ease-out;
 }
 
 .input-whimsy {
-  @apply w-full px-4 py-3 rounded-2xl border-2 border-[#B6FFE0] bg-white/80 focus:border-[#65DBFF] focus:outline-none focus:ring-4 focus:ring-[#65DBFF]/20 transition-all duration-300;
+  @apply w-full px-4 py-3 rounded-2xl border-2 border-[#DEB887] bg-white/80 focus:border-[#F56949] focus:outline-none focus:ring-4 focus:ring-[#F56949]/20 transition-all duration-300;
 }
 
 .input-whimsy:focus {
@@ -286,7 +289,7 @@
 
 .soup-bowl-icon {
   font-size: 3rem;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 6px rgba(139, 69, 19, 0.2));
 }
 
 @media (max-width: 768px) {

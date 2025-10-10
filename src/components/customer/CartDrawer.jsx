@@ -42,8 +42,8 @@ export default function CartDrawer() {
         onClick={() => setIsCartOpen(false)}
       />
 
-      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white shadow-2xl z-50 animate-slide-in-right flex flex-col">
-        <div className="bg-gradient-to-r from-[#65DBFF] to-[#8EFFE4] p-6 flex items-center justify-between">
+      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-[#F8F3F0] shadow-2xl z-50 animate-slide-in-right flex flex-col">
+        <div className="bg-gradient-to-r from-[#F56949] to-[#FEC37D] p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <ShoppingBag className="w-6 h-6 text-white" />
             <div>
@@ -53,7 +53,7 @@ export default function CartDrawer() {
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+            className="w-10 h-10 rounded-full bg-[#F8F3F0]/30 hover:bg-[#F8F3F0]/50 flex items-center justify-center transition-all"
           >
             <X className="w-6 h-6 text-white" />
           </button>
@@ -63,44 +63,44 @@ export default function CartDrawer() {
           {cart.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">🍜</div>
-              <p className="text-xl text-[#4A5568] font-medium mb-2">Your cart is empty</p>
-              <p className="text-[#4A5568]">Add some delicious items to get started!</p>
+              <p className="text-xl text-[#654321] font-medium mb-2">Your cart is empty</p>
+              <p className="text-[#654321]">Add some delicious items to get started!</p>
             </div>
           ) : (
             cart.map((item) => (
               <div key={item.cartItemId} className="card-whimsy p-4 flex gap-4 hover-lift">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D2F3F8] to-[#B6FFE0] flex items-center justify-center text-4xl flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#FEC37D] to-[#E6B85C] flex items-center justify-center text-4xl flex-shrink-0">
                   {item.category === 'soup' ? '🍲' : item.category === 'baked_good' ? '🥖' : '🍱'}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-[#2D3748] truncate">{item.name}</h3>
+                  <h3 className="font-bold text-[#8B4513] truncate">{item.name}</h3>
                   {item.variant && (
-                    <p className="text-sm text-[#4A5568]">{item.variant.name}</p>
+                    <p className="text-sm text-[#654321]">{item.variant.name}</p>
                   )}
-                  <p className="text-[#FF6B6B] font-bold mt-1">
+                  <p className="text-[#F56949] font-bold mt-1">
                     ${(item.variant ? item.variant.price : item.price).toFixed(2)}
                   </p>
 
                   <div className="flex items-center gap-3 mt-3">
                     <button
                       onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
-                      className="w-8 h-8 rounded-full bg-[#B6FFE0] hover:bg-[#8EFFE4] flex items-center justify-center transition-all"
+                      className="w-8 h-8 rounded-full bg-[#E6B85C] hover:bg-[#FEC37D] flex items-center justify-center transition-all"
                     >
-                      <Minus className="w-4 h-4 text-[#2D3748]" />
+                      <Minus className="w-4 h-4 text-white" />
                     </button>
-                    <span className="font-bold text-[#2D3748] min-w-[2rem] text-center">
+                    <span className="font-bold text-[#8B4513] min-w-[2rem] text-center">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
-                      className="w-8 h-8 rounded-full bg-[#B6FFE0] hover:bg-[#8EFFE4] flex items-center justify-center transition-all"
+                      className="w-8 h-8 rounded-full bg-[#E6B85C] hover:bg-[#FEC37D] flex items-center justify-center transition-all"
                     >
-                      <Plus className="w-4 h-4 text-[#2D3748]" />
+                      <Plus className="w-4 h-4 text-white" />
                     </button>
                     <button
                       onClick={() => removeFromCart(item.cartItemId)}
-                      className="ml-auto text-[#FF6B6B] hover:text-[#ff5252] font-medium text-sm"
+                      className="ml-auto text-[#F56949] hover:text-[#BC5B22] font-medium text-sm"
                     >
                       Remove
                     </button>
@@ -112,10 +112,10 @@ export default function CartDrawer() {
         </div>
 
         {cart.length > 0 && (
-          <div className="border-t-2 border-[#B6FFE0] p-6 bg-white">
+          <div className="border-t-2 border-[#DEB887] p-6 bg-[#F8F3F0]">
             <div className="flex justify-between items-center mb-6">
-              <span className="text-xl font-bold text-[#2D3748]">Total</span>
-              <span className="text-3xl font-bold text-[#FF6B6B]">
+              <span className="text-xl font-bold text-[#8B4513]">Total</span>
+              <span className="text-3xl font-bold text-[#F56949]">
                 ${getCartTotal().toFixed(2)}
               </span>
             </div>
@@ -126,7 +126,7 @@ export default function CartDrawer() {
               Checkout
               <ArrowRight className="w-6 h-6" />
             </button>
-            <p className="text-center text-sm text-[#4A5568] mt-3">
+            <p className="text-center text-sm text-[#654321] mt-3">
               Free delivery on orders over $30
             </p>
           </div>

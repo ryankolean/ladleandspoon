@@ -38,7 +38,7 @@ export default function WhimsicalHeader() {
   const cartCount = getCartCount();
 
   return (
-    <header className="sticky top-0 z-30 bg-gradient-to-r from-[#65DBFF] via-[#8EFFE4] to-[#65DBFF] shadow-lg backdrop-blur-sm">
+    <header className="sticky top-0 z-30 bg-gradient-to-r from-[#F56949] via-[#FEC37D] to-[#F56949] shadow-lg backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 group">
@@ -56,20 +56,20 @@ export default function WhimsicalHeader() {
           <nav className="hidden md:flex items-center gap-2">
             <Link
               to="/"
-              className="px-6 py-2 rounded-full text-white font-medium hover:bg-white/20 transition-all"
+              className="px-6 py-2 rounded-full text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
             >
               Home
             </Link>
             <Link
               to="/order"
-              className="px-6 py-2 rounded-full text-white font-medium hover:bg-white/20 transition-all"
+              className="px-6 py-2 rounded-full text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
             >
               Menu
             </Link>
             {user && (
               <Link
                 to="/my-orders"
-                className="px-6 py-2 rounded-full text-white font-medium hover:bg-white/20 transition-all"
+                className="px-6 py-2 rounded-full text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
               >
                 My Orders
               </Link>
@@ -79,7 +79,7 @@ export default function WhimsicalHeader() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:scale-110"
+              className="relative w-12 h-12 rounded-full bg-[#F8F3F0]/30 hover:bg-[#F8F3F0]/50 flex items-center justify-center transition-all hover:scale-110"
             >
               <ShoppingCart className="w-6 h-6 text-white" />
               {cartCount > 0 && (
@@ -93,7 +93,7 @@ export default function WhimsicalHeader() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-[#F8F3F0]/30 hover:bg-[#F8F3F0]/50 flex items-center justify-center transition-all hover:scale-110"
                 >
                   <UserIcon className="w-6 h-6 text-white" />
                 </button>
@@ -105,29 +105,29 @@ export default function WhimsicalHeader() {
                       onClick={() => setShowUserMenu(false)}
                     />
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden animate-scale-in">
-                      <div className="p-4 bg-gradient-to-r from-[#D2F3F8] to-[#B6FFE0]">
-                        <p className="font-semibold text-[#2D3748] truncate">
+                      <div className="p-4 bg-gradient-to-r from-[#FEC37D] to-[#E6B85C]">
+                        <p className="font-semibold text-[#8B4513] truncate">
                           {user.email}
                         </p>
                         {user.full_name && (
-                          <p className="text-sm text-[#4A5568] truncate">{user.full_name}</p>
+                          <p className="text-sm text-[#654321] truncate">{user.full_name}</p>
                         )}
                       </div>
                       <div className="py-2">
                         <Link
                           to="/profile"
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-[#B6FFE0]/30 transition-all"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-[#FEC37D]/30 transition-all"
                           onClick={() => setShowUserMenu(false)}
                         >
-                          <Settings className="w-5 h-5 text-[#4A5568]" />
-                          <span className="font-medium text-[#2D3748]">Settings</span>
+                          <Settings className="w-5 h-5 text-[#654321]" />
+                          <span className="font-medium text-[#8B4513]">Settings</span>
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#FF6B6B]/10 transition-all text-left"
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F56949]/10 transition-all text-left"
                         >
-                          <LogOut className="w-5 h-5 text-[#FF6B6B]" />
-                          <span className="font-medium text-[#FF6B6B]">Sign Out</span>
+                          <LogOut className="w-5 h-5 text-[#F56949]" />
+                          <span className="font-medium text-[#F56949]">Sign Out</span>
                         </button>
                       </div>
                     </div>
@@ -137,7 +137,7 @@ export default function WhimsicalHeader() {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:block px-6 py-2 rounded-full bg-white text-[#65DBFF] font-semibold hover:shadow-lg transition-all hover:scale-105"
+                className="hidden sm:block px-6 py-2 rounded-full bg-[#F8F3F0] text-[#F56949] font-semibold hover:shadow-lg transition-all hover:scale-105"
               >
                 Sign In
               </Link>
@@ -145,7 +145,7 @@ export default function WhimsicalHeader() {
 
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="md:hidden w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+              className="md:hidden w-12 h-12 rounded-full bg-[#F8F3F0]/30 hover:bg-[#F8F3F0]/50 flex items-center justify-center transition-all"
             >
               {showMobileMenu ? (
                 <X className="w-6 h-6 text-white" />
@@ -161,14 +161,14 @@ export default function WhimsicalHeader() {
             <nav className="flex flex-col gap-2">
               <Link
                 to="/"
-                className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-white/20 transition-all"
+                className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
                 onClick={() => setShowMobileMenu(false)}
               >
                 Home
               </Link>
               <Link
                 to="/order"
-                className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-white/20 transition-all"
+                className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
                 onClick={() => setShowMobileMenu(false)}
               >
                 Menu
@@ -176,7 +176,7 @@ export default function WhimsicalHeader() {
               {user && (
                 <Link
                   to="/my-orders"
-                  className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-white/20 transition-all"
+                  className="px-6 py-3 rounded-2xl text-white font-medium hover:bg-[#BC5B22]/30 transition-all"
                   onClick={() => setShowMobileMenu(false)}
                 >
                   My Orders
@@ -185,7 +185,7 @@ export default function WhimsicalHeader() {
               {!user && (
                 <Link
                   to="/login"
-                  className="px-6 py-3 rounded-2xl bg-white text-[#65DBFF] font-semibold hover:shadow-lg transition-all text-center"
+                  className="px-6 py-3 rounded-2xl bg-[#F8F3F0] text-[#F56949] font-semibold hover:shadow-lg transition-all text-center"
                   onClick={() => setShowMobileMenu(false)}
                 >
                   Sign In
