@@ -63,7 +63,12 @@ export default function Orders() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+    let matchesStatus;
+    if (statusFilter === "all") {
+      matchesStatus = order.status !== "cancelled";
+    } else {
+      matchesStatus = order.status === statusFilter;
+    }
     return matchesSearch && matchesStatus;
   });
 
@@ -97,7 +102,7 @@ export default function Orders() {
               />
             </div>
             <div className="flex gap-2 flex-wrap">
-              {["all", "pending", "preparing", "ready", "completed"].map((status) => (
+              {["all", "pending", "preparing", "ready", "completed", "cancelled"].map((status) => (
                 <Button
                   key={status}
                   variant={statusFilter === status ? "default" : "outline"}
