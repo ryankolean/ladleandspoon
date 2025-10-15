@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Clock, DollarSign, Users, CreditCard, CheckCircle, Mail, Phone } from "lucide-react";
+import { Clock, DollarSign, Users, CreditCard, CheckCircle, Mail, Phone, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
 const statusColors = {
@@ -12,7 +12,8 @@ const statusColors = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
   preparing: "bg-blue-100 text-blue-800 border-blue-200",
   ready: "bg-green-100 text-green-800 border-green-200",
-  completed: "bg-gray-100 text-gray-800 border-gray-200"
+  completed: "bg-gray-100 text-gray-800 border-gray-200",
+  cancelled: "bg-red-100 text-red-800 border-red-200"
 };
 
 const paymentStatusColors = {
@@ -50,11 +51,17 @@ export default function OrderDetails({ order, onOrderUpdate }) {
   };
 
   const handlePaymentComplete = () => {
-    onOrderUpdate(order.id, { 
+    onOrderUpdate(order.id, {
       payment_status: "paid",
       // If it was cash on delivery, also mark order as completed.
       ...(order.payment_method === 'cash' && { status: 'completed' })
     });
+  };
+
+  const handleCancelOrder = () => {
+    if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+      onOrderUpdate(order.id, { status: 'cancelled' });
+    }
   };
 
   return (
@@ -158,12 +165,23 @@ export default function OrderDetails({ order, onOrderUpdate }) {
 
         {/* Actions */}
         <div className="space-y-3">
-          {order.status !== "completed" && nextStatus[order.status] && (
+          {order.status !== "completed" && order.status !== "cancelled" && nextStatus[order.status] && (
             <Button
               onClick={handleStatusUpdate}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
               Mark as {nextStatus[order.status].replace('_', ' ')}
+            </Button>
+          )}
+
+          {order.status !== "completed" && order.status !== "cancelled" && (
+            <Button
+              onClick={handleCancelOrder}
+              variant="destructive"
+              className="w-full"
+            >
+              <XCircle className="w-4 h-4 mr-2" />
+              Cancel Order
             </Button>
           )}
 
@@ -176,7 +194,7 @@ export default function OrderDetails({ order, onOrderUpdate }) {
               Mark as Paid
             </Button>
           )}
-          
+
           {order.payment_status === 'cash_on_delivery' && (
             <Button
               onClick={handlePaymentComplete}
@@ -191,6 +209,13 @@ export default function OrderDetails({ order, onOrderUpdate }) {
             <div className="flex items-center justify-center text-green-600 font-medium">
               <CheckCircle className="w-5 h-5 mr-2" />
               Order Complete
+            </div>
+          )}
+
+          {order.status === "cancelled" && (
+            <div className="flex items-center justify-center text-red-600 font-medium">
+              <XCircle className="w-5 h-5 mr-2" />
+              Order Cancelled
             </div>
           )}
         </div>
