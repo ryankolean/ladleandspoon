@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserIcon, Save } from "lucide-react";
 
-import SMSPreferences from "../components/customer/SMSPreferences";
-
 export default function CustomerSettings() {
   const [currentUser, setCurrentUser] = useState(null);
   const [userInfo, setUserInfo] = useState({ first_name: "", last_name: "", phone: "" });
@@ -84,8 +82,7 @@ export default function CustomerSettings() {
           <p className="text-gray-600 mt-2">Manage your preferences and notifications</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Profile Information */}
+        <div className="max-w-2xl mx-auto">
           <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -144,9 +141,6 @@ export default function CustomerSettings() {
               </Button>
             </CardContent>
           </Card>
-
-          {/* SMS Preferences */}
-          <SMSPreferences currentUser={currentUser} />
         </div>
       </div>
     </div>

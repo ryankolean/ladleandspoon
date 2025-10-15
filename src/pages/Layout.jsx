@@ -12,7 +12,6 @@ import {
   BarChart3,
   Settings,
   Coffee,
-  MessageSquare,
   Truck,
   LogOut,
   Users,
@@ -55,11 +54,6 @@ const navigationItems = [
     title: "Menu",
     url: createPageUrl("Menu"),
     icon: UtensilsCrossed,
-  },
-  {
-    title: "SMS Marketing",
-    url: createPageUrl("SMSManagement"),
-    icon: MessageSquare,
   },
   {
     title: "Reports",

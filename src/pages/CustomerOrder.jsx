@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Order, MenuItem, OrderingWindow, TaxSettings, UserAddress, SMSSubscription, User } from "@/services";
+import { Order, MenuItem, OrderingWindow, TaxSettings, UserAddress, User } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,8 +63,6 @@ export default function CustomerOrder() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [submissionState, setSubmissionState] = useState("form");
   const [lastOrder, setLastOrder] = useState(null);
-  const [smsOptIn, setSmsOptIn] = useState(false);
-  const [isSmsSubscribed, setIsSmsSubscribed] = useState(false); // New state for SMS subscription status
 
   const STORE_ADDRESS = "1247 Bielby Waterford, MI 48328";
   const MAX_DELIVERY_DISTANCE_MILES = 10;
@@ -142,17 +140,6 @@ export default function CustomerOrder() {
           setIsGuest(false);
           setPhone(user.phone || "");
 
-          if (user.phone) {
-            const subscriptions = await SMSSubscription.filter({ phone_number: user.phone });
-            if (subscriptions.length > 0 && subscriptions[0].is_subscribed) {
-              setIsSmsSubscribed(true);
-            } else {
-              setIsSmsSubscribed(false);
-            }
-          } else {
-            setIsSmsSubscribed(false);
-          }
-
           const savedAddresses = await UserAddress.list('-created_at');
           setUserAddresses(savedAddresses);
           
@@ -168,7 +155,6 @@ export default function CustomerOrder() {
         // User not logged in - this is fine for customer view
         setCurrentUser(null);
         setIsGuest(true);
-        setIsSmsSubscribed(false); // Ensure this is false for guests
       }
       
       setMenuItems(menuData);
@@ -199,13 +185,6 @@ export default function CustomerOrder() {
               setIsGuest(false);
               setPhone(user.phone || "");
 
-              if (user.phone) {
-                const subscriptions = await SMSSubscription.filter({ phone_number: user.phone });
-                setIsSmsSubscribed(subscriptions && subscriptions.length > 0);
-              } else {
-                setIsSmsSubscribed(false);
-              }
-
               const addresses = await UserAddress.filter({ user_id: user.id });
               setUserAddresses(addresses);
               if (addresses.length > 0) {
@@ -224,7 +203,6 @@ export default function CustomerOrder() {
           setIsGuest(true);
           setUserAddresses([]);
           setPhone("");
-          setIsSmsSubscribed(false);
         }
       })();
     });
@@ -449,29 +427,12 @@ export default function CustomerOrder() {
         // 2. Save new address if one was entered and not manually typed
         if (deliveryAddressSource === 'new' && newAddress && !newAddress.manual) {
           await UserAddress.create({
-            label: `Saved on ${new Date().toLocaleDateString()}`, // Auto-generated label
+            label: `Saved on ${new Date().toLocaleDateString()}`,
             full_address: newAddress.formatted_address,
             lat: newAddress.lat,
             lng: newAddress.lng,
-            delivery_instructions: "" // Can be added in profile management
+            delivery_instructions: ""
           });
-        }
-        // 3. Handle SMS opt-in
-        if (smsOptIn && finalPhoneNumber && !isSmsSubscribed) { // Only attempt to subscribe if not already subscribed
-            const existingSub = await SMSSubscription.filter({ phone_number: finalPhoneNumber }, '-created_at', 1);
-            if(existingSub.length > 0) {
-                if(!existingSub[0].is_subscribed) {
-                    await SMSSubscription.update(existingSub[0].id, { is_subscribed: true });
-                }
-            } else {
-                await SMSSubscription.create({
-                    phone_number: finalPhoneNumber,
-                    customer_name: currentUser.full_name,
-                    customer_email: currentUser.email,
-                    is_subscribed: true,
-                    consent_method: "order_form"
-                });
-            }
         }
       }
 
@@ -515,8 +476,7 @@ export default function CustomerOrder() {
     setSubmissionState('form');
     setLastOrder(null);
     setPaymentMethod('');
-    setSmsOptIn(false); // Reset SMS opt-in
-    setCart([]); // Ensure cart is clear for a new order
+    setCart([]);
 
     if (!currentUser) { // If there's no current user (was a guest), reset guest fields
       setIsGuest(true);
@@ -818,18 +778,6 @@ export default function CustomerOrder() {
                       )
                     }
                   </div>
-                  
-                  {/* SMS Opt-in */}
-                  {(isGuest || (currentUser && !isSmsSubscribed)) && (
-                    <div className="flex items-start space-x-2 pt-4 border-t">
-                      <Checkbox id="sms-opt-in" checked={smsOptIn} onCheckedChange={setSmsOptIn} />
-                      <div className="grid gap-1.5 leading-none">
-                        <Label htmlFor="sms-opt-in" className="text-sm font-medium">
-                          Receive updates and promotions via SMS
-                        </Label>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>

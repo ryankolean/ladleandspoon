@@ -14,8 +14,6 @@ import CustomerOrder from "./CustomerOrder";
 
 import OrderingSettings from "./OrderingSettings";
 
-import SMSManagement from "./SMSManagement";
-
 import CustomerSettings from "./CustomerSettings";
 
 import Profile from "./Profile";
@@ -59,8 +57,6 @@ const PAGES = {
     CustomerOrder: CustomerOrder,
 
     OrderingSettings: OrderingSettings,
-
-    SMSManagement: SMSManagement,
 
     CustomerSettings: CustomerSettings,
 
@@ -125,7 +121,6 @@ function PagesContent() {
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<OrderingSettings />} />
-                <Route path="/sms" element={<SMSManagement />} />
                 <Route path="/customer-settings" element={<CustomerSettings />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/users" element={<UserManagement />} />
