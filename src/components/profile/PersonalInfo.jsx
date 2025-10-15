@@ -8,7 +8,8 @@ import { Save } from 'lucide-react';
 
 export default function PersonalInfo() {
   const [userData, setUserData] = useState({
-    full_name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     date_of_birth: ''
@@ -21,7 +22,8 @@ export default function PersonalInfo() {
       try {
         const user = await User.me();
         setUserData({
-          full_name: user.full_name || '',
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
           email: user.email || '',
           phone: user.phone || '',
           date_of_birth: user.date_of_birth || ''
@@ -45,10 +47,10 @@ export default function PersonalInfo() {
     setIsSaving(true);
     try {
       await User.updateMyUserData({
-        full_name: userData.full_name,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
         phone: userData.phone,
         date_of_birth: userData.date_of_birth
-        // Email is not updatable via this method
       });
       alert('Profile updated successfully!');
     } catch (error) {
@@ -73,8 +75,12 @@ export default function PersonalInfo() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="full_name">Full Name *</Label>
-        <Input id="full_name" name="full_name" value={userData.full_name} onChange={handleInputChange} required />
+        <Label htmlFor="first_name">First Name *</Label>
+        <Input id="first_name" name="first_name" value={userData.first_name} onChange={handleInputChange} required />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="last_name">Last Name *</Label>
+        <Input id="last_name" name="last_name" value={userData.last_name} onChange={handleInputChange} required />
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email Address</Label>
