@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User as UserIcon, LogOut, Settings, Menu, X } from 'lucide-react';
+import { ShoppingCart, User as UserIcon, LogOut, Settings, Menu, X, LayoutDashboard } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { User } from '@/services';
 
@@ -8,6 +8,7 @@ export default function WhimsicalHeader() {
   const navigate = useNavigate();
   const { getCartCount, setIsCartOpen } = useCart();
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -19,8 +20,12 @@ export default function WhimsicalHeader() {
     try {
       const currentUser = await User.me();
       setUser(currentUser);
+
+      const adminStatus = await User.isAdmin();
+      setIsAdmin(adminStatus);
     } catch (error) {
       console.log('Not authenticated');
+      setIsAdmin(false);
     }
   };
 
@@ -114,6 +119,16 @@ export default function WhimsicalHeader() {
                         )}
                       </div>
                       <div className="py-2">
+                        {isAdmin && (
+                          <Link
+                            to="/dashboard"
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition-all border-b border-gray-100"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <LayoutDashboard className="w-5 h-5 text-blue-600" />
+                            <span className="font-medium text-blue-600">Admin Panel</span>
+                          </Link>
+                        )}
                         <Link
                           to="/profile"
                           className="flex items-center gap-3 px-4 py-3 hover:bg-[#FEC37D]/30 transition-all"
