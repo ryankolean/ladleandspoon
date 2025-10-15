@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Coffee, Mail, Lock, ArrowLeft, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { validateEmail, validateFullName, validatePassword, checkEmailExists } from "@/utils/validation";
+import { validateEmail, validateFullName, validateFirstName, validateLastName, validatePassword, checkEmailExists } from "@/utils/validation";
 import FieldError from "@/components/form/FieldError";
 import PasswordStrength from "@/components/form/PasswordStrength";
 import { sessionManager } from "@/utils/sessionManager";
@@ -25,7 +25,8 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -100,27 +101,52 @@ export default function Login() {
     }
   };
 
-  const handleFullNameBlur = () => {
-    setFieldTouched({ ...fieldTouched, fullName: true });
+  const handleFirstNameBlur = () => {
+    setFieldTouched({ ...fieldTouched, firstName: true });
 
-    const validation = validateFullName(fullName);
+    const validation = validateFirstName(firstName);
     if (!validation.isValid) {
-      setFieldErrors({ ...fieldErrors, fullName: validation.errors[0] });
+      setFieldErrors({ ...fieldErrors, firstName: validation.errors[0] });
     } else {
-      setFieldErrors({ ...fieldErrors, fullName: null });
+      setFieldErrors({ ...fieldErrors, firstName: null });
     }
   };
 
-  const handleFullNameChange = (e) => {
+  const handleFirstNameChange = (e) => {
     const newName = e.target.value;
-    setFullName(newName);
+    setFirstName(newName);
 
-    if (fieldTouched.fullName) {
-      const validation = validateFullName(newName);
+    if (fieldTouched.firstName) {
+      const validation = validateFirstName(newName);
       if (!validation.isValid) {
-        setFieldErrors({ ...fieldErrors, fullName: validation.errors[0] });
+        setFieldErrors({ ...fieldErrors, firstName: validation.errors[0] });
       } else {
-        setFieldErrors({ ...fieldErrors, fullName: null });
+        setFieldErrors({ ...fieldErrors, firstName: null });
+      }
+    }
+  };
+
+  const handleLastNameBlur = () => {
+    setFieldTouched({ ...fieldTouched, lastName: true });
+
+    const validation = validateLastName(lastName);
+    if (!validation.isValid) {
+      setFieldErrors({ ...fieldErrors, lastName: validation.errors[0] });
+    } else {
+      setFieldErrors({ ...fieldErrors, lastName: null });
+    }
+  };
+
+  const handleLastNameChange = (e) => {
+    const newName = e.target.value;
+    setLastName(newName);
+
+    if (fieldTouched.lastName) {
+      const validation = validateLastName(newName);
+      if (!validation.isValid) {
+        setFieldErrors({ ...fieldErrors, lastName: validation.errors[0] });
+      } else {
+        setFieldErrors({ ...fieldErrors, lastName: null });
       }
     }
   };
@@ -174,7 +200,7 @@ export default function Login() {
           redirectTo: finalRedirect,
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent',
+            prompt: 'select_account consent',
           },
           scopes: 'openid email profile'
         }
@@ -240,14 +266,19 @@ export default function Login() {
     setSuccessMessage("");
     setFieldErrors({});
 
-    const nameValidation = validateFullName(fullName);
+    const firstNameValidation = validateFirstName(firstName);
+    const lastNameValidation = validateLastName(lastName);
     const emailValidation = validateEmail(email);
     const passwordValidation = validatePassword(password);
 
     const errors = {};
 
-    if (!nameValidation.isValid) {
-      errors.fullName = nameValidation.errors[0];
+    if (!firstNameValidation.isValid) {
+      errors.firstName = firstNameValidation.errors[0];
+    }
+
+    if (!lastNameValidation.isValid) {
+      errors.lastName = lastNameValidation.errors[0];
     }
 
     if (!emailValidation.isValid) {
@@ -279,7 +310,9 @@ export default function Login() {
         password,
         options: {
           data: {
-            full_name: nameValidation.sanitized
+            first_name: firstNameValidation.sanitized,
+            last_name: lastNameValidation.sanitized,
+            full_name: `${firstNameValidation.sanitized} ${lastNameValidation.sanitized}`.trim()
           }
         }
       });
@@ -565,18 +598,33 @@ export default function Login() {
                 <TabsContent value="signup" className="space-y-4">
                   <form onSubmit={handleEmailSignUp} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-name">Full Name</Label>
+                      <Label htmlFor="signup-firstname">First Name</Label>
                       <Input
-                        id="signup-name"
+                        id="signup-firstname"
                         type="text"
-                        placeholder="John Doe"
-                        value={fullName}
-                        onChange={handleFullNameChange}
-                        onBlur={handleFullNameBlur}
-                        className={fieldErrors.fullName ? 'border-red-500' : ''}
+                        placeholder="John"
+                        value={firstName}
+                        onChange={handleFirstNameChange}
+                        onBlur={handleFirstNameBlur}
+                        className={fieldErrors.firstName ? 'border-red-500' : ''}
                         disabled={isLoading}
                       />
-                      <FieldError error={fieldErrors.fullName} />
+                      <FieldError error={fieldErrors.firstName} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-lastname">Last Name</Label>
+                      <Input
+                        id="signup-lastname"
+                        type="text"
+                        placeholder="Doe"
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                        onBlur={handleLastNameBlur}
+                        className={fieldErrors.lastName ? 'border-red-500' : ''}
+                        disabled={isLoading}
+                      />
+                      <FieldError error={fieldErrors.lastName} />
                     </div>
 
                     <div className="space-y-2">

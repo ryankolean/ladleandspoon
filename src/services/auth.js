@@ -184,12 +184,19 @@ export const User = {
     if (updates.email) authUpdates.email = updates.email;
     if (updates.password) authUpdates.password = updates.password;
 
-    const profileFields = ['full_name', 'phone', 'role', 'date_of_birth', 'preferences'];
+    const profileFields = ['first_name', 'last_name', 'full_name', 'phone', 'role', 'date_of_birth', 'preferences'];
     profileFields.forEach(field => {
       if (updates[field] !== undefined) {
         profileUpdates[field] = updates[field];
       }
     });
+
+    // Auto-generate full_name if first_name or last_name provided
+    if (updates.first_name !== undefined || updates.last_name !== undefined) {
+      const firstName = updates.first_name !== undefined ? updates.first_name : '';
+      const lastName = updates.last_name !== undefined ? updates.last_name : '';
+      profileUpdates.full_name = `${firstName} ${lastName}`.trim();
+    }
 
     if (Object.keys(authUpdates).length > 0) {
       const { error: authError } = await supabase.auth.updateUser(authUpdates);

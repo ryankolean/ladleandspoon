@@ -10,7 +10,7 @@ import SMSPreferences from "../components/customer/SMSPreferences";
 
 export default function CustomerSettings() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userInfo, setUserInfo] = useState({ phone: "" });
+  const [userInfo, setUserInfo] = useState({ first_name: "", last_name: "", phone: "" });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -22,7 +22,11 @@ export default function CustomerSettings() {
     try {
       const user = await User.me();
       setCurrentUser(user);
-      setUserInfo({ phone: user.phone || "" });
+      setUserInfo({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        phone: user.phone || ""
+      });
     } catch (error) {
       console.error("Error loading user data:", error);
     } finally {
@@ -91,11 +95,23 @@ export default function CustomerSettings() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Full Name</Label>
-                <Input value={currentUser.full_name} disabled className="bg-gray-50" />
-                <p className="text-sm text-gray-500 mt-1">Name cannot be changed here. Contact support if needed.</p>
+                <Label>First Name</Label>
+                <Input
+                  value={userInfo.first_name}
+                  onChange={(e) => setUserInfo({...userInfo, first_name: e.target.value})}
+                  placeholder="John"
+                />
               </div>
-              
+
+              <div>
+                <Label>Last Name</Label>
+                <Input
+                  value={userInfo.last_name}
+                  onChange={(e) => setUserInfo({...userInfo, last_name: e.target.value})}
+                  placeholder="Doe"
+                />
+              </div>
+
               <div>
                 <Label>Email Address</Label>
                 <Input value={currentUser.email} disabled className="bg-gray-50" />

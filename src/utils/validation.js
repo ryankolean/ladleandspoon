@@ -79,6 +79,68 @@ export const validateFullName = (name) => {
   return { isValid: true, errors: [], sanitized };
 };
 
+export const validateFirstName = (name) => {
+  const errors = [];
+
+  if (!name || name.trim() === '') {
+    errors.push('First name is required');
+    return { isValid: false, errors };
+  }
+
+  const trimmedName = name.trim();
+
+  if (trimmedName.length < 1) {
+    errors.push('First name must be at least 1 character');
+    return { isValid: false, errors };
+  }
+
+  if (trimmedName.length > 50) {
+    errors.push('First name is too long');
+    return { isValid: false, errors };
+  }
+
+  const nameRegex = /^[a-zA-Z\s'-]+$/;
+  if (!nameRegex.test(trimmedName)) {
+    errors.push('First name can only contain letters, hyphens, and apostrophes');
+    return { isValid: false, errors };
+  }
+
+  const sanitized = trimmedName.replace(/\s+/g, ' ');
+
+  return { isValid: true, errors: [], sanitized };
+};
+
+export const validateLastName = (name) => {
+  const errors = [];
+
+  if (!name || name.trim() === '') {
+    errors.push('Last name is required');
+    return { isValid: false, errors };
+  }
+
+  const trimmedName = name.trim();
+
+  if (trimmedName.length < 1) {
+    errors.push('Last name must be at least 1 character');
+    return { isValid: false, errors };
+  }
+
+  if (trimmedName.length > 50) {
+    errors.push('Last name is too long');
+    return { isValid: false, errors };
+  }
+
+  const nameRegex = /^[a-zA-Z\s'-]+$/;
+  if (!nameRegex.test(trimmedName)) {
+    errors.push('Last name can only contain letters, hyphens, and apostrophes');
+    return { isValid: false, errors };
+  }
+
+  const sanitized = trimmedName.replace(/\s+/g, ' ');
+
+  return { isValid: true, errors: [], sanitized };
+};
+
 export const validatePassword = (password) => {
   const errors = [];
   const requirements = {

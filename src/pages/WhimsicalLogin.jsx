@@ -13,7 +13,8 @@ export default function WhimsicalLogin() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -57,7 +58,11 @@ export default function WhimsicalLogin() {
 
     try {
       await User.signUp(email, password, {
-        data: { full_name: fullName }
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim()
+        }
       });
       await User.signIn(email, password);
       await sessionManager.initializeSession(rememberMe);
@@ -78,6 +83,9 @@ export default function WhimsicalLogin() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+          queryParams: {
+            prompt: 'select_account consent',
+          },
           scopes: 'openid email profile'
         }
       });
@@ -137,22 +145,41 @@ export default function WhimsicalLogin() {
 
           <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
             {isSignUp && (
-              <div>
-                <label className="block text-sm font-semibold text-[#8B4513] mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="John Doe"
-                    required={isSignUp}
-                    className="input-whimsy !pl-16 pr-4"
-                  />
+              <>
+                <div>
+                  <label className="block text-sm font-semibold text-[#8B4513] mb-2">
+                    First Name
+                  </label>
+                  <div className="relative">
+                    <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="John"
+                      required={isSignUp}
+                      className="input-whimsy !pl-16 pr-4"
+                    />
+                  </div>
                 </div>
-              </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#8B4513] mb-2">
+                    Last Name
+                  </label>
+                  <div className="relative">
+                    <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#654321] pointer-events-none z-10" />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Doe"
+                      required={isSignUp}
+                      className="input-whimsy !pl-16 pr-4"
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             <div>
