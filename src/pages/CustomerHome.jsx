@@ -97,33 +97,33 @@ export default function CustomerHome() {
                 ))}
               </div>
               <p className="text-[#654321] mb-4 italic">
-                "Best soup I've ever had! The delivery is always on time and the portions are generous."
+                "The French Onion soup is absolutely incredible! Rich, flavorful, and the cheese is perfectly melted. Best soup in Waterford!"
+              </p>
+              <p className="font-semibold text-[#8B4513]">- Jennifer L.</p>
+            </div>
+
+            <div className="card-whimsy p-6 hover-lift">
+              <div className="flex gap-1 mb-4 justify-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-2xl">⭐</span>
+                ))}
+              </div>
+              <p className="text-[#654321] mb-4 italic">
+                "Love ordering from Ladle & Spoon! The soups are homemade quality and the delivery is always right on time. My family's new favorite!"
+              </p>
+              <p className="font-semibold text-[#8B4513]">- Mike T.</p>
+            </div>
+
+            <div className="card-whimsy p-6 hover-lift">
+              <div className="flex gap-1 mb-4 justify-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-2xl">⭐</span>
+                ))}
+              </div>
+              <p className="text-[#654321] mb-4 italic">
+                "Amazing food and wonderful service! The baked goods are fresh and delicious. So happy to have this in our community!"
               </p>
               <p className="font-semibold text-[#8B4513]">- Sarah M.</p>
-            </div>
-
-            <div className="card-whimsy p-6 hover-lift">
-              <div className="flex gap-1 mb-4 justify-center">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-2xl">⭐</span>
-                ))}
-              </div>
-              <p className="text-[#654321] mb-4 italic">
-                "The baked goods are amazing! Feels like grandma's cooking delivered right to my door."
-              </p>
-              <p className="font-semibold text-[#8B4513]">- Michael R.</p>
-            </div>
-
-            <div className="card-whimsy p-6 hover-lift">
-              <div className="flex gap-1 mb-4 justify-center">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-2xl">⭐</span>
-                ))}
-              </div>
-              <p className="text-[#654321] mb-4 italic">
-                "Perfect for busy weeknights. Delicious, healthy, and so convenient!"
-              </p>
-              <p className="font-semibold text-[#8B4513]">- Emily K.</p>
             </div>
           </div>
         </section>
