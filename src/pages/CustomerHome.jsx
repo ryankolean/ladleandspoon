@@ -97,9 +97,9 @@ export default function CustomerHome() {
                 ))}
               </div>
               <p className="text-[#654321] mb-4 italic">
-                "The French Onion soup is absolutely incredible! Rich, flavorful, and the cheese is perfectly melted. Best soup in Waterford!"
+                "Ladle & Spoon is a fantastic find! Their homemade soups are incredibly flavorful, taste genuinely fresh, and are the perfect comforting meal. The delivery is always prompt and friendly, making it super easy to get a wholesome, delicious dinner on the table. Highly recommend trying them out – a true local gem!"
               </p>
-              <p className="font-semibold text-[#8B4513]">- Jennifer L.</p>
+              <p className="font-semibold text-[#8B4513]">- Tony Edmonds</p>
             </div>
 
             <div className="card-whimsy p-6 hover-lift">
@@ -109,9 +109,9 @@ export default function CustomerHome() {
                 ))}
               </div>
               <p className="text-[#654321] mb-4 italic">
-                "Love ordering from Ladle & Spoon! The soups are homemade quality and the delivery is always right on time. My family's new favorite!"
+                "This is one of the best chicken noodle soups I have had. Will be ordering more."
               </p>
-              <p className="font-semibold text-[#8B4513]">- Mike T.</p>
+              <p className="font-semibold text-[#8B4513]">- Linda Kumm</p>
             </div>
 
             <div className="card-whimsy p-6 hover-lift">
@@ -121,9 +121,45 @@ export default function CustomerHome() {
                 ))}
               </div>
               <p className="text-[#654321] mb-4 italic">
-                "Amazing food and wonderful service! The baked goods are fresh and delicious. So happy to have this in our community!"
+                "Excellent flavors with a personal touch. I absolutely love their soups and it's supporting a local business that cares about their customers."
               </p>
-              <p className="font-semibold text-[#8B4513]">- Sarah M.</p>
+              <p className="font-semibold text-[#8B4513]">- Sean Saile</p>
+            </div>
+
+            <div className="card-whimsy p-6 hover-lift">
+              <div className="flex gap-1 mb-4 justify-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-2xl">⭐</span>
+                ))}
+              </div>
+              <p className="text-[#654321] mb-4 italic">
+                "Best homemade soups around! Found this gem on Facebook and have placed an order weekly since! Quick and tasty! We always look forward to the weekly menu posts :)"
+              </p>
+              <p className="font-semibold text-[#8B4513]">- Morgan Roe</p>
+            </div>
+
+            <div className="card-whimsy p-6 hover-lift">
+              <div className="flex gap-1 mb-4 justify-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-2xl">⭐</span>
+                ))}
+              </div>
+              <p className="text-[#654321] mb-4 italic">
+                "I absolutely LOVE the soups & cerviche that I've tried from Ladle & Spoon! I order every week. The variety & deliciousness of every soup that I try keeps me coming back for more. The latest soup that I tried was a spicy carrot ginger soup…I will be ordering that again every time that it's available!"
+              </p>
+              <p className="font-semibold text-[#8B4513]">- Melissa Watts</p>
+            </div>
+
+            <div className="card-whimsy p-6 hover-lift">
+              <div className="flex gap-1 mb-4 justify-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-2xl">⭐</span>
+                ))}
+              </div>
+              <p className="text-[#654321] mb-4 italic">
+                "Marry Me Chicken Soup: I've tried several different soup flavors from this company, and this one tops the list. It has a creamy and smooth texture, all with the perfect ingredients, seasoning and flavor. Whether it's a quick meal or something to warm you up, Ladle & Spoon hits the spot always. Highly recommend!"
+              </p>
+              <p className="font-semibold text-[#8B4513]">- Trisha Prise</p>
             </div>
           </div>
         </section>
