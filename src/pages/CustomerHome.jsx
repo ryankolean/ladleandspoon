@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/services';
-import { ShoppingCart, Sparkles, Heart } from 'lucide-react';
+import { ShoppingCart, Sparkles, Heart, Facebook } from 'lucide-react';
 
 export default function CustomerHome() {
   const navigate = useNavigate();
@@ -126,6 +126,26 @@ export default function CustomerHome() {
               <p className="font-semibold text-[#8B4513]">- Sarah M.</p>
             </div>
           </div>
+        </section>
+
+        <section className="py-12 text-center border-t border-[#E6B85C]/30">
+          <h3 className="text-2xl font-bold text-[#8B4513] mb-6">
+            Follow Us
+          </h3>
+          <div className="flex justify-center gap-4">
+            <a
+              href="https://www.facebook.com/p/Ladle-Spoon-61566931251705/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-14 h-14 rounded-full bg-gradient-to-r from-[#FEC37D] to-[#E6B85C] hover:from-[#E6B85C] hover:to-[#FEC37D] flex items-center justify-center transition-all hover:scale-110 shadow-lg hover:shadow-xl"
+              aria-label="Visit our Facebook page"
+            >
+              <Facebook className="w-7 h-7 text-[#8B4513]" />
+            </a>
+          </div>
+          <p className="text-sm text-[#654321] mt-4">
+            Stay updated with our latest soups and specials!
+          </p>
         </section>
 
       </div>
