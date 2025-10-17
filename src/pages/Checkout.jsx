@@ -341,27 +341,18 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  {deliveryDistance !== null && !isCalculatingDistance && (
-                    <div className="mt-2">
-                      <div className={`text-sm font-medium ${
-                        deliveryDistance <= MAX_DELIVERY_DISTANCE_MILES ? 'text-green-600' : 'text-[#F56949]'
-                      }`}>
-                        Distance from {STORE_ADDRESS}: {deliveryDistance.toFixed(1)} miles
+                  {deliveryDistance !== null && !isCalculatingDistance && deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
+                    <div className="mt-3 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-amber-900 mb-1">
+                          Outside Standard Delivery Area
+                        </p>
+                        <p className="text-sm text-amber-800">
+                          Your address is beyond our standard {MAX_DELIVERY_DISTANCE_MILES}-mile delivery radius.
+                          Place your order and we will contact you to confirm delivery.
+                        </p>
                       </div>
-                      {deliveryDistance > MAX_DELIVERY_DISTANCE_MILES && (
-                        <div className="mt-3 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl flex items-start gap-3">
-                          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-semibold text-amber-900 mb-1">
-                              Outside Standard Delivery Area
-                            </p>
-                            <p className="text-sm text-amber-800">
-                              Your address is beyond our standard {MAX_DELIVERY_DISTANCE_MILES}-mile delivery radius.
-                              Place your order and we will contact you to confirm delivery.
-                            </p>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
