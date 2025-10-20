@@ -40,7 +40,15 @@ import OrderSuccess from "./OrderSuccess";
 
 import MyOrders from "./MyOrders";
 
+import SMSTerms from "./SMSTerms";
+
+import PrivacyPolicy from "./PrivacyPolicy";
+
+import SMSOptIn from "./SMSOptIn";
+
 import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
+
+import { ComplianceFooter } from "@/components/customer/ComplianceFooter";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -99,20 +107,38 @@ function PagesContent() {
         return <ResetPassword />;
     }
 
+    const isCompliancePage = location.pathname === '/sms-terms' || location.pathname === '/privacy-policy' || location.pathname === '/sms-opt-in';
+
+    if (isCompliancePage) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <Routes>
+                    <Route path="/sms-terms" element={<SMSTerms />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/sms-opt-in" element={<SMSOptIn />} />
+                </Routes>
+                <ComplianceFooter />
+            </div>
+        );
+    }
+
     const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout' || location.pathname === '/order-success';
 
     if (isCustomerRoute) {
         return (
-            <>
+            <div className="flex flex-col min-h-screen">
                 <WhimsicalHeader />
-                <Routes>
-                    <Route path="/" element={<CustomerHome />} />
-                    <Route path="/order" element={<CustomerMenu />} />
-                    <Route path="/my-orders" element={<MyOrders />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/order-success" element={<OrderSuccess />} />
-                </Routes>
-            </>
+                <div className="flex-1">
+                    <Routes>
+                        <Route path="/" element={<CustomerHome />} />
+                        <Route path="/order" element={<CustomerMenu />} />
+                        <Route path="/my-orders" element={<MyOrders />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/order-success" element={<OrderSuccess />} />
+                    </Routes>
+                </div>
+                <ComplianceFooter />
+            </div>
         );
     }
 
