@@ -57,6 +57,13 @@ export function ComplianceFooter() {
 
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <Link
+                to="/terms"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Terms & Conditions
+              </Link>
+              <span className="text-white/40">|</span>
+              <Link
                 to="/privacy-policy"
                 className="text-white/80 hover:text-white transition-colors"
               >

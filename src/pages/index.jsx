@@ -46,6 +46,8 @@ import PrivacyPolicy from "./PrivacyPolicy";
 
 import SMSOptIn from "./SMSOptIn";
 
+import TermsAndConditions from "./TermsAndConditions";
+
 import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { ComplianceFooter } from "@/components/customer/ComplianceFooter";
@@ -107,7 +109,7 @@ function PagesContent() {
         return <ResetPassword />;
     }
 
-    const isCompliancePage = location.pathname === '/sms-terms' || location.pathname === '/privacy-policy' || location.pathname === '/sms-opt-in';
+    const isCompliancePage = location.pathname === '/sms-terms' || location.pathname === '/privacy-policy' || location.pathname === '/sms-opt-in' || location.pathname === '/terms';
 
     if (isCompliancePage) {
         return (
@@ -116,6 +118,7 @@ function PagesContent() {
                     <Route path="/sms-terms" element={<SMSTerms />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/sms-opt-in" element={<SMSOptIn />} />
+                    <Route path="/terms" element={<TermsAndConditions />} />
                 </Routes>
                 <ComplianceFooter />
             </div>
