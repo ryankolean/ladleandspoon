@@ -186,7 +186,7 @@ export default function PrivacyPolicy() {
               <p>If you have questions or concerns about this Privacy Policy, please contact us:</p>
               <div className="bg-[#FFF8E1] p-4 rounded-lg mt-2">
                 <p className="font-semibold mb-2">Ladle and Spoon</p>
-                <p>Email: privacy@ladleandspoon.com</p>
+                <p>Email: ladleandspoon1024@gmail.com</p>
                 <p>Phone: (866) 660-1976</p>
                 <p>Mail: 123 Main Street, Suite 100, City, ST 12345</p>
               </div>

@@ -358,10 +358,9 @@ export default function TermsAndConditions() {
               </p>
               <div className="bg-[#FFF8E1] p-4 rounded-lg mt-2">
                 <p className="font-semibold mb-2">Ladle and Spoon</p>
-                <p>Email: legal@ladleandspoon.com</p>
+                <p>Email: ladleandspoon1024@gmail.com</p>
                 <p>Phone: (866) 660-1976</p>
                 <p>Mail: 123 Main Street, Suite 100, City, ST 12345</p>
-                <p>Hours: Monday-Friday, 9am-5pm EST</p>
               </div>
             </section>
           </div>

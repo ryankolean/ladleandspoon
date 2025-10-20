@@ -19,8 +19,7 @@ export function ComplianceFooter() {
             <h3 className="font-bold text-lg mb-3">Contact Us</h3>
             <div className="space-y-1 text-sm text-white/80">
               <p>Phone: (866) 660-1976</p>
-              <p>Email: info@ladleandspoon.com</p>
-              <p>Hours: Mon-Fri, 9am-5pm EST</p>
+              <p>Email: ladleandspoon1024@gmail.com</p>
             </div>
           </div>
 

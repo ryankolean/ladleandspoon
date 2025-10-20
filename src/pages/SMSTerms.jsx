@@ -90,7 +90,7 @@ export default function SMSTerms() {
               </p>
               <div className="bg-[#FFF8E1] p-4 rounded-lg mt-2">
                 <p className="font-semibold">Ladle and Spoon</p>
-                <p>Email: support@ladleandspoon.com</p>
+                <p>Email: ladleandspoon1024@gmail.com</p>
                 <p>Phone: (866) 660-1976</p>
               </div>
             </section>
@@ -140,9 +140,8 @@ export default function SMSTerms() {
               <div className="bg-[#FFF8E1] p-4 rounded-lg">
                 <p className="font-semibold mb-2">For questions about SMS services:</p>
                 <p>Ladle and Spoon</p>
-                <p>Email: sms@ladleandspoon.com</p>
+                <p>Email: ladleandspoon1024@gmail.com</p>
                 <p>Phone: (866) 660-1976</p>
-                <p>Hours: Monday-Friday, 9am-5pm EST</p>
               </div>
             </section>
           </div>
