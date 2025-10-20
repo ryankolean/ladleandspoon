@@ -232,7 +232,7 @@ export default function SMSOptIn() {
                 type="tel"
                 value={phoneNumber}
                 onChange={handlePhoneChange}
-                placeholder="(555) 123-4567"
+                placeholder="(866) 660-1976"
                 className="input-whimsy"
                 maxLength={14}
                 required

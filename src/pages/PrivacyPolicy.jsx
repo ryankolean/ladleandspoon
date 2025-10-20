@@ -187,7 +187,7 @@ export default function PrivacyPolicy() {
               <div className="bg-[#FFF8E1] p-4 rounded-lg mt-2">
                 <p className="font-semibold mb-2">Ladle and Spoon</p>
                 <p>Email: privacy@ladleandspoon.com</p>
-                <p>Phone: (555) 123-4567</p>
+                <p>Phone: (866) 660-1976</p>
                 <p>Mail: 123 Main Street, Suite 100, City, ST 12345</p>
               </div>
             </section>

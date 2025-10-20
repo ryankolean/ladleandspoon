@@ -56,7 +56,7 @@ export function PhoneNumberManager({ authorizedNumbers, onUpdate }) {
     if (!normalized || !validatePhoneNumber(normalized)) {
       setFeedback({
         type: 'error',
-        message: 'Invalid phone number format. Use (555) 123-4567 or +15551234567',
+        message: 'Invalid phone number format. Use (866) 660-1976 or +18666601976',
       });
       return;
     }
@@ -158,7 +158,7 @@ export function PhoneNumberManager({ authorizedNumbers, onUpdate }) {
                 </label>
                 <Input
                   type="tel"
-                  placeholder="(555) 123-4567"
+                  placeholder="(866) 660-1976"
                   value={newPhone}
                   onChange={(e) => setNewPhone(e.target.value)}
                   className="input-whimsy"
