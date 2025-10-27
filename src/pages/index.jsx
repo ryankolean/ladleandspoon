@@ -48,6 +48,8 @@ import SMSOptIn from "./SMSOptIn";
 
 import TermsAndConditions from "./TermsAndConditions";
 
+import CustomerProfile from "./CustomerProfile";
+
 import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { ComplianceFooter } from "@/components/customer/ComplianceFooter";
@@ -127,7 +129,7 @@ function PagesContent() {
         );
     }
 
-    const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout' || location.pathname === '/order-success';
+    const isCustomerRoute = location.pathname === '/' || location.pathname === '/order' || location.pathname === '/my-orders' || location.pathname === '/checkout' || location.pathname === '/order-success' || location.pathname === '/profile';
 
     if (isCustomerRoute) {
         return (
@@ -140,6 +142,7 @@ function PagesContent() {
                         <Route path="/my-orders" element={<MyOrders />} />
                         <Route path="/checkout" element={<Checkout />} />
                         <Route path="/order-success" element={<OrderSuccess />} />
+                        <Route path="/profile" element={<CustomerProfile />} />
                     </Routes>
                 </div>
                 <ComplianceFooter />
