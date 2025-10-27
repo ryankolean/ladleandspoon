@@ -25,6 +25,7 @@
   3. Security
     - Enable RLS on sms_consent_records table
     - Admin-only access to consent records for compliance auditing
+    - Policies check for admin role via role field in profiles
 */
 
 DO $$
@@ -86,7 +87,7 @@ CREATE POLICY "Admins can view consent records"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
