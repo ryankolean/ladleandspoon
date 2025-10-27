@@ -199,7 +199,14 @@ export const User = {
     ];
     profileFields.forEach(field => {
       if (updates[field] !== undefined) {
-        profileUpdates[field] = updates[field];
+        let value = updates[field];
+        if ((field === 'date_of_birth' || field === 'sms_consent_date') && value === '') {
+          value = null;
+        }
+        if (value !== undefined && value !== null && typeof value === 'string') {
+          value = value.trim();
+        }
+        profileUpdates[field] = value;
       }
     });
 
@@ -233,7 +240,10 @@ export const User = {
           .update(profileUpdates)
           .eq('id', user.id);
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+          throw profileError;
+        }
       }
     }
 
