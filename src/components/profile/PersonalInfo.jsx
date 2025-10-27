@@ -14,7 +14,6 @@ export default function PersonalInfo() {
     last_name: '',
     email: '',
     phone: '',
-    date_of_birth: '',
     sms_consent: false
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +28,6 @@ export default function PersonalInfo() {
           last_name: user.last_name || '',
           email: user.email || '',
           phone: user.phone || '',
-          date_of_birth: user.date_of_birth || '',
           sms_consent: user.sms_consent || false
         });
       } catch (error) {
@@ -54,7 +52,6 @@ export default function PersonalInfo() {
         first_name: userData.first_name,
         last_name: userData.last_name,
         phone: userData.phone,
-        date_of_birth: userData.date_of_birth,
         sms_consent: userData.sms_consent,
         sms_consent_method: 'profile_update',
         sms_consent_date: userData.sms_consent ? new Date().toISOString() : null
@@ -97,10 +94,6 @@ export default function PersonalInfo() {
       <div className="space-y-2">
         <Label htmlFor="phone">Phone Number</Label>
         <Input id="phone" name="phone" type="tel" value={userData.phone} onChange={handleInputChange} />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="date_of_birth">Date of Birth</Label>
-        <Input id="date_of_birth" name="date_of_birth" type="date" value={userData.date_of_birth} onChange={handleInputChange} />
       </div>
 
       <div className="border-t pt-6 mt-6">

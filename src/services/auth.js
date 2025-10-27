@@ -190,7 +190,6 @@ export const User = {
       'full_name',
       'phone',
       'role',
-      'date_of_birth',
       'preferences',
       'sms_consent',
       'sms_consent_date',
@@ -200,7 +199,7 @@ export const User = {
     profileFields.forEach(field => {
       if (updates[field] !== undefined) {
         let value = updates[field];
-        if ((field === 'date_of_birth' || field === 'sms_consent_date') && value === '') {
+        if (field === 'sms_consent_date' && value === '') {
           value = null;
         }
         if (value !== undefined && value !== null && typeof value === 'string') {
