@@ -3,6 +3,10 @@ import { checkSupabase } from '@/lib/supabaseCheck';
 
 export const UserAddress = {
   async list(orderBy = '-created_at') {
+    checkSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const [field, direction] = orderBy.startsWith('-')
       ? [orderBy.slice(1), false]
       : [orderBy, true];
@@ -10,6 +14,7 @@ export const UserAddress = {
     const { data, error } = await supabase
       .from('user_addresses')
       .select('*')
+      .eq('user_id', user.id)
       .order(field, { ascending: direction });
 
     if (error) throw error;
@@ -40,10 +45,15 @@ export const UserAddress = {
   },
 
   async create(addressData) {
+    checkSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('user_addresses')
       .insert({
         ...addressData,
+        user_id: user.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })

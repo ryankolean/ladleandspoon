@@ -184,7 +184,19 @@ export const User = {
     if (updates.email) authUpdates.email = updates.email;
     if (updates.password) authUpdates.password = updates.password;
 
-    const profileFields = ['first_name', 'last_name', 'full_name', 'phone', 'role', 'date_of_birth', 'preferences'];
+    const profileFields = [
+      'first_name',
+      'last_name',
+      'full_name',
+      'phone',
+      'role',
+      'date_of_birth',
+      'preferences',
+      'sms_consent',
+      'sms_consent_date',
+      'sms_consent_method',
+      'sms_consent_ip'
+    ];
     profileFields.forEach(field => {
       if (updates[field] !== undefined) {
         profileUpdates[field] = updates[field];
@@ -193,9 +205,18 @@ export const User = {
 
     // Auto-generate full_name if first_name or last_name provided
     if (updates.first_name !== undefined || updates.last_name !== undefined) {
-      const firstName = updates.first_name !== undefined ? updates.first_name : '';
-      const lastName = updates.last_name !== undefined ? updates.last_name : '';
-      profileUpdates.full_name = `${firstName} ${lastName}`.trim();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: currentProfile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        const firstName = updates.first_name !== undefined ? updates.first_name : (currentProfile?.first_name || '');
+        const lastName = updates.last_name !== undefined ? updates.last_name : (currentProfile?.last_name || '');
+        profileUpdates.full_name = `${firstName} ${lastName}`.trim();
+      }
     }
 
     if (Object.keys(authUpdates).length > 0) {

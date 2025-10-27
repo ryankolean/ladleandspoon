@@ -13,7 +13,5 @@ export function createPageUrl(pageName) {
     'CustomerSettings': '/customer-settings'
   };
 
-  const url = routes[pageName] || '/';
-  console.log('createPageUrl:', pageName, '→', url);
-  return url;
+  return routes[pageName] || '/';
 }
