@@ -52,6 +52,8 @@ import WhimsicalHeader from "@/components/customer/WhimsicalHeader";
 
 import { ComplianceFooter } from "@/components/customer/ComplianceFooter";
 
+import AdminOnly from "@/components/auth/AdminOnly";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -146,20 +148,22 @@ function PagesContent() {
     }
 
     return (
-        <Layout currentPageName={currentPage}>
-            <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/deliveryroute" element={<DeliveryRoute />} />
-                <Route path="/menu" element={<Menu />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/smspanel" element={<SMSPanel />} />
-                <Route path="/settings" element={<OrderingSettings />} />
-                <Route path="/customer-settings" element={<CustomerSettings />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/users" element={<UserManagement />} />
-            </Routes>
-        </Layout>
+        <AdminOnly>
+            <Layout currentPageName={currentPage}>
+                <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/deliveryroute" element={<DeliveryRoute />} />
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/smspanel" element={<SMSPanel />} />
+                    <Route path="/settings" element={<OrderingSettings />} />
+                    <Route path="/customer-settings" element={<CustomerSettings />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/users" element={<UserManagement />} />
+                </Routes>
+            </Layout>
+        </AdminOnly>
     );
 }
 

@@ -97,8 +97,8 @@ export default function Layout({ children, currentPageName }) {
             const adminStatus = await User.isAdmin();
             setIsAdmin(adminStatus);
           } catch (adminError) {
-            console.warn('Admin check failed, enabling preview mode:', adminError);
-            setIsAdmin(true);
+            console.error('Admin check failed:', adminError);
+            setIsAdmin(false);
           }
 
           const path = window.location.pathname;
@@ -107,32 +107,11 @@ export default function Layout({ children, currentPageName }) {
           } else {
             setCurrentView("customer");
           }
-        } else {
-          const path = window.location.pathname;
-          if (path !== '/' && path !== '/order' && path !== '/login') {
-            setIsAdmin(true);
-            setCurrentUser({
-              id: 'preview-user',
-              email: 'preview@demo.com',
-              full_name: 'Preview User',
-              role: 'admin'
-            });
-            setCurrentView("admin");
-          }
         }
       } catch (error) {
-        console.warn('Auth check failed, enabling preview mode:', error);
-        const path = window.location.pathname;
-        if (path !== '/' && path !== '/order' && path !== '/login') {
-          setIsAdmin(true);
-          setCurrentUser({
-            id: 'preview-user',
-            email: 'preview@demo.com',
-            full_name: 'Preview User',
-            role: 'admin'
-          });
-          setCurrentView("admin");
-        }
+        console.error('Auth check failed:', error);
+        setCurrentUser(null);
+        setIsAdmin(false);
       } finally {
         setIsCheckingAuth(false);
       }
@@ -175,16 +154,14 @@ export default function Layout({ children, currentPageName }) {
 
   // If user is not logged in or customer view is selected, show customer ordering interface
   if (!currentUser || currentView === "customer") {
-    const showViewToggle = isAdmin || currentUser?.role === 'admin' || currentUser?.id === 'preview-user';
-
     return (
       <div className="min-h-screen relative">
         {/* Top right controls */}
         <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
-          {showViewToggle && (
+          {isAdmin && (
             <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
           )}
-          {currentUser && currentUser.id !== 'preview-user' && (
+          {currentUser && (
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 text-sm font-medium text-red-600 hover:bg-red-50 border border-red-200"
@@ -200,6 +177,12 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Admin view - only accessible to logged-in admin users
+  // Redirect non-admins to customer view
+  if (!isAdmin) {
+    navigate('/');
+    return null;
+  }
+
   return (
     <SessionProvider>
       <SidebarProvider>
@@ -249,13 +232,6 @@ export default function Layout({ children, currentPageName }) {
           </SidebarContent>
 
           <SidebarFooter className="border-t border-orange-100 p-4 space-y-3">
-            {currentUser?.id === 'preview-user' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
-                <p className="text-xs text-blue-800 font-medium text-center">
-                  Preview Mode - Setup database to enable full features
-                </p>
-              </div>
-            )}
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full flex items-center justify-center">
                 <span className="text-orange-700 font-semibold text-sm">
@@ -267,19 +243,17 @@ export default function Layout({ children, currentPageName }) {
                   {currentUser?.full_name || 'Staff User'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {currentUser?.id === 'preview-user' ? 'Preview Mode' : 'Admin Panel Active'}
+                  Admin Panel Active
                 </p>
               </div>
             </div>
-            {currentUser?.id !== 'preview-user' && (
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
-              </button>
-            )}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
           </SidebarFooter>
         </Sidebar>
 

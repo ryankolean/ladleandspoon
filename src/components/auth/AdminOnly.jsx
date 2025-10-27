@@ -17,8 +17,7 @@ export default function AdminOnly({ children }) {
         const currentUser = await User.me();
 
         if (!currentUser) {
-          console.warn('No user found, enabling preview mode for admin pages');
-          setIsAdmin(true);
+          setError('Authentication required. Please log in.');
           setIsLoading(false);
           return;
         }
@@ -31,12 +30,12 @@ export default function AdminOnly({ children }) {
             setError('Access Denied. Admin role required.');
           }
         } catch (adminError) {
-          console.warn('Admin check failed, enabling preview mode:', adminError);
-          setIsAdmin(true);
+          console.error('Admin check failed:', adminError);
+          setError('Unable to verify admin status. Please try again.');
         }
       } catch (e) {
-        console.warn('Auth check failed, enabling preview mode:', e);
-        setIsAdmin(true);
+        console.error('Auth check failed:', e);
+        setError('Authentication failed. Please log in.');
       } finally {
         setIsLoading(false);
       }
