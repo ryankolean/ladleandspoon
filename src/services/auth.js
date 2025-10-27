@@ -10,10 +10,7 @@ export const User = {
     if (!user) return null;
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
+      .rpc('get_my_profile');
 
     if (profileError) {
       console.error('Error fetching profile:', profileError);
@@ -21,7 +18,7 @@ export const User = {
 
     return {
       ...user,
-      ...profile,
+      ...(profile && profile.length > 0 ? profile[0] : {}),
       email: user.email,
       id: user.id
     };
@@ -35,10 +32,7 @@ export const User = {
     if (!user) return null;
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
+      .rpc('get_my_profile');
 
     if (profileError) {
       console.error('Error fetching profile:', profileError);
@@ -46,7 +40,7 @@ export const User = {
 
     return {
       ...user,
-      ...profile,
+      ...(profile && profile.length > 0 ? profile[0] : {}),
       email: user.email,
       id: user.id
     };
@@ -213,14 +207,11 @@ export const User = {
     if (updates.first_name !== undefined || updates.last_name !== undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: currentProfile } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', user.id)
-          .maybeSingle();
+        const { data: currentProfile } = await supabase.rpc('get_my_profile');
+        const current = currentProfile && currentProfile.length > 0 ? currentProfile[0] : null;
 
-        const firstName = updates.first_name !== undefined ? updates.first_name : (currentProfile?.first_name || '');
-        const lastName = updates.last_name !== undefined ? updates.last_name : (currentProfile?.last_name || '');
+        const firstName = updates.first_name !== undefined ? updates.first_name : (current?.first_name || '');
+        const lastName = updates.last_name !== undefined ? updates.last_name : (current?.last_name || '');
         profileUpdates.full_name = `${firstName} ${lastName}`.trim();
       }
     }
