@@ -51,7 +51,7 @@
   2. Security
     - Enable RLS on all tables
     - Admin-only access policies for all SMS tables
-    - Policies check for admin role via is_admin flag in profiles
+    - Policies check for admin role via role field in profiles
 */
 
 CREATE TABLE IF NOT EXISTS sms_conversations (
@@ -131,7 +131,7 @@ CREATE POLICY "Admins can view all conversations"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -142,7 +142,7 @@ CREATE POLICY "Admins can insert conversations"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -153,14 +153,14 @@ CREATE POLICY "Admins can update conversations"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -171,7 +171,7 @@ CREATE POLICY "Admins can view all messages"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -182,7 +182,7 @@ CREATE POLICY "Admins can insert messages"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -193,14 +193,14 @@ CREATE POLICY "Admins can update messages"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -211,7 +211,7 @@ CREATE POLICY "Admins can view authorized numbers"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -222,7 +222,7 @@ CREATE POLICY "Admins can insert authorized numbers"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -233,14 +233,14 @@ CREATE POLICY "Admins can update authorized numbers"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -251,7 +251,7 @@ CREATE POLICY "Admins can view opt-outs"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
@@ -262,7 +262,7 @@ CREATE POLICY "Admins can insert opt-outs"
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.is_admin = true
+      AND profiles.role = 'admin'
     )
   );
 
