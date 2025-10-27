@@ -63,13 +63,12 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
+    const { data: profileData } = await supabase
+      .rpc("get_my_profile");
 
-    if (!profile?.is_admin) {
+    const profile = profileData && profileData.length > 0 ? profileData[0] : null;
+
+    if (!profile || profile.role !== 'admin') {
       return new Response(
         JSON.stringify({ error: "Admin access required" }),
         {
