@@ -273,16 +273,18 @@ export const User = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
 
-      const { data, error } = await supabase.rpc('is_user_admin', {
-        user_uuid: user.id
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .maybeSingle();
 
       if (error) {
         console.error('Error checking admin status:', error);
         return false;
       }
 
-      return data === true;
+      return data?.is_admin === true;
     } catch (err) {
       console.error('Exception checking admin status:', err);
       return false;

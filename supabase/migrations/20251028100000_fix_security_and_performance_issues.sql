@@ -328,7 +328,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION is_user_admin(user_id uuid)
+CREATE OR REPLACE FUNCTION is_user_admin(user_uuid uuid)
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -339,7 +339,7 @@ DECLARE
 BEGIN
   SELECT is_admin INTO is_admin_user
   FROM profiles
-  WHERE id = user_id;
+  WHERE id = user_uuid;
 
   RETURN COALESCE(is_admin_user, false);
 END;
