@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, RefreshCw, Settings } from 'lucide-react';
+import { MessageSquare, RefreshCw, Settings, PenSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ConversationList } from '../components/sms/ConversationList';
 import { MessageThread } from '../components/sms/MessageThread';
 import { PhoneNumberManager } from '../components/sms/PhoneNumberManager';
+import { ComposeMessageDialog } from '../components/sms/ComposeMessageDialog';
 import {
   getConversations,
   getAuthorizedPhoneNumbers,
@@ -16,6 +17,7 @@ export default function SMSPanel() {
   const [authorizedNumbers, setAuthorizedNumbers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showPhoneManager, setShowPhoneManager] = useState(true);
+  const [showComposeDialog, setShowComposeDialog] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -103,6 +105,13 @@ export default function SMSPanel() {
           </div>
           <div className="flex items-center gap-2">
             <Button
+              onClick={() => setShowComposeDialog(true)}
+              className="bg-white text-[#8B4513] hover:bg-white/90 font-semibold"
+            >
+              <PenSquare className="w-4 h-4 mr-2" />
+              Compose New Message
+            </Button>
+            <Button
               onClick={loadData}
               variant="ghost"
               className="text-white hover:bg-white/20"
@@ -160,6 +169,11 @@ export default function SMSPanel() {
           />
         )}
       </div>
+
+      <ComposeMessageDialog
+        open={showComposeDialog}
+        onOpenChange={setShowComposeDialog}
+      />
     </div>
   );
 }
