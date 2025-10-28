@@ -5,6 +5,8 @@ import { createPageUrl } from "@/utils";
 import { User } from "@/services";
 import SessionProvider from "@/components/auth/SessionProvider";
 import { sessionManager } from "@/utils/sessionManager";
+import { getConversationStats, subscribeToConversations } from "@/services/sms";
+import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -85,6 +87,7 @@ export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -96,6 +99,10 @@ export default function Layout({ children, currentPageName }) {
           try {
             const adminStatus = await User.isAdmin();
             setIsAdmin(adminStatus);
+
+            if (adminStatus) {
+              loadUnreadCount();
+            }
           } catch (adminError) {
             console.error('Admin check failed:', adminError);
             setIsAdmin(false);
@@ -119,6 +126,27 @@ export default function Layout({ children, currentPageName }) {
 
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = subscribeToConversations((payload) => {
+      loadUnreadCount();
+    });
+
+    return () => {
+      channel?.unsubscribe();
+    };
+  }, [isAdmin]);
+
+  const loadUnreadCount = async () => {
+    try {
+      const stats = await getConversationStats();
+      setUnreadCount(stats.totalUnread || 0);
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  };
 
   const handleViewChange = (newView) => {
     setCurrentView(newView);
@@ -221,7 +249,12 @@ export default function Layout({ children, currentPageName }) {
                       >
                         <Link to={item.url} className="flex items-center gap-3 px-3 py-3">
                           <item.icon className="w-5 h-5" />
-                          <span className="font-medium">{item.title}</span>
+                          <span className="font-medium flex-1">{item.title}</span>
+                          {item.title === "SMS Messaging" && unreadCount > 0 && (
+                            <Badge className="bg-red-500 text-white hover:bg-red-600 ml-auto">
+                              {unreadCount}
+                            </Badge>
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
