@@ -448,27 +448,28 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF OLD.sms_consent IS DISTINCT FROM NEW.sms_consent THEN
+  IF OLD.sms_consent IS DISTINCT FROM NEW.sms_consent AND NEW.phone IS NOT NULL THEN
     INSERT INTO sms_consent_records (
-      user_id,
       phone_number,
+      first_name,
+      last_name,
+      email,
       consent_given,
       consent_method,
-      consent_text,
-      ip_address
+      notes
     ) VALUES (
-      NEW.id,
       NEW.phone,
+      NEW.first_name,
+      NEW.last_name,
+      NEW.email,
       NEW.sms_consent,
       'profile_update',
-      CASE 
+      CASE
         WHEN NEW.sms_consent THEN 'User opted in via profile settings'
         ELSE 'User opted out via profile settings'
-      END,
-      NULL
+      END
     );
   END IF;
-
   RETURN NEW;
 END;
 $$;
