@@ -179,6 +179,106 @@ export async function getEligibleSMSUsers() {
   return result;
 }
 
+export async function sendBatchSMS({ userIds, messageTemplate }) {
+  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-batch-sms`;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Authentication required');
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userIds, messageTemplate }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to send batch SMS');
+  }
+
+  return result;
+}
+
+export async function getBatchCampaignSummary(batchId) {
+  const { data, error } = await supabase.rpc('get_batch_campaign_summary', {
+    p_batch_id: batchId
+  });
+
+  if (error) throw error;
+  return data && data.length > 0 ? data[0] : null;
+}
+
+export async function getMessageAuditHistory(filters = {}) {
+  let query = supabase
+    .from('sms_message_audit')
+    .select(`
+      *,
+      user:profiles!sms_message_audit_user_id_fkey(first_name, last_name, email),
+      sender:profiles!sms_message_audit_sent_by_fkey(first_name, last_name)
+    `)
+    .order('sent_at', { ascending: false });
+
+  if (filters.batchId) {
+    query = query.eq('batch_id', filters.batchId);
+  }
+
+  if (filters.userId) {
+    query = query.eq('user_id', filters.userId);
+  }
+
+  if (filters.status) {
+    query = query.eq('twilio_status', filters.status);
+  }
+
+  if (filters.dateFrom) {
+    query = query.gte('sent_at', filters.dateFrom);
+  }
+
+  if (filters.dateTo) {
+    query = query.lte('sent_at', filters.dateTo);
+  }
+
+  if (filters.limit) {
+    query = query.limit(filters.limit);
+  } else {
+    query = query.limit(100);
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getBatchCampaigns(limit = 50) {
+  const { data, error } = await supabase
+    .from('sms_message_audit')
+    .select('batch_id, sent_at, template_used, sent_by, profiles!sms_message_audit_sent_by_fkey(first_name, last_name)')
+    .not('batch_id', 'is', null)
+    .order('sent_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+
+  const uniqueBatches = [];
+  const seenBatchIds = new Set();
+
+  for (const record of data || []) {
+    if (!seenBatchIds.has(record.batch_id)) {
+      seenBatchIds.add(record.batch_id);
+      uniqueBatches.push(record);
+    }
+  }
+
+  return uniqueBatches;
+}
+
 export async function searchMessages(query, dateFrom, dateTo) {
   let queryBuilder = supabase
     .from('sms_messages')
