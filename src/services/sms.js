@@ -154,6 +154,31 @@ export async function getOptOuts() {
   return data;
 }
 
+export async function getEligibleSMSUsers() {
+  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sms-eligible-users`;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Authentication required');
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to fetch eligible SMS users');
+  }
+
+  return result;
+}
+
 export async function searchMessages(query, dateFrom, dateTo) {
   let queryBuilder = supabase
     .from('sms_messages')
