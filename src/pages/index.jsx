@@ -30,6 +30,8 @@ import UserManagement from "./UserManagement";
 
 import SMSPanel from "./SMSPanel";
 
+import SMSAudit from "./SMSAudit";
+
 import CustomerHome from "./CustomerHome";
 
 import CustomerMenu from "./CustomerMenu";
@@ -81,6 +83,8 @@ const PAGES = {
     UserManagement: UserManagement,
 
     SMSPanel: SMSPanel,
+
+    SMSAudit: SMSAudit,
 
 }
 
@@ -160,6 +164,7 @@ function PagesContent() {
                     <Route path="/menu" element={<Menu />} />
                     <Route path="/reports" element={<Reports />} />
                     <Route path="/smspanel" element={<SMSPanel />} />
+                    <Route path="/smsaudit" element={<SMSAudit />} />
                     <Route path="/settings" element={<OrderingSettings />} />
                     <Route path="/customer-settings" element={<CustomerSettings />} />
                     <Route path="/profile" element={<Profile />} />

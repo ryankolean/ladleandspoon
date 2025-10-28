@@ -18,6 +18,7 @@ import {
   LogOut,
   Users,
   MessageSquare,
+  FileText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -67,6 +68,11 @@ const navigationItems = [
     title: "SMS Messaging",
     url: createPageUrl("SMSPanel"),
     icon: MessageSquare,
+  },
+  {
+    title: "SMS Audit Log",
+    url: createPageUrl("SMSAudit"),
+    icon: FileText,
   },
   {
     title: "Ordering Settings",

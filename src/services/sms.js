@@ -514,3 +514,233 @@ export async function getBatchStatusBreakdown(batchId) {
   if (error) throw error;
   return data || [];
 }
+
+export async function getAuditLogs({
+  page = 1,
+  limit = 50,
+  search = '',
+  status = 'all',
+  direction = 'all',
+  dateFrom = null,
+  dateTo = null
+}) {
+  let auditQuery = supabase
+    .from('sms_message_audit')
+    .select(`
+      *,
+      user:profiles!sms_message_audit_user_id_fkey(
+        id,
+        first_name,
+        last_name,
+        email,
+        phone
+      ),
+      sender:profiles!sms_message_audit_sent_by_fkey(
+        id,
+        first_name,
+        last_name,
+        email
+      )
+    `, { count: 'exact' });
+
+  let messagesQuery = supabase
+    .from('sms_messages')
+    .select(`
+      *,
+      conversation:sms_conversations!inner(
+        customer_phone,
+        customer:profiles(
+          id,
+          first_name,
+          last_name,
+          email,
+          phone
+        )
+      )
+    `, { count: 'exact' });
+
+  if (search) {
+    const searchPattern = `%${search}%`;
+    auditQuery = auditQuery.or(`phone_number.ilike.${searchPattern},message_body.ilike.${searchPattern}`);
+    messagesQuery = messagesQuery.or(`body.ilike.${searchPattern},from_number.ilike.${searchPattern},to_number.ilike.${searchPattern}`);
+  }
+
+  if (status !== 'all') {
+    auditQuery = auditQuery.eq('twilio_status', status);
+    messagesQuery = messagesQuery.eq('status', status);
+  }
+
+  if (direction !== 'all') {
+    messagesQuery = messagesQuery.eq('direction', direction);
+  }
+
+  if (dateFrom) {
+    auditQuery = auditQuery.gte('sent_at', dateFrom);
+    messagesQuery = messagesQuery.gte('sent_at', dateFrom);
+  }
+
+  if (dateTo) {
+    auditQuery = auditQuery.lte('sent_at', dateTo);
+    messagesQuery = messagesQuery.lte('sent_at', dateTo);
+  }
+
+  const offset = (page - 1) * limit;
+
+  const [auditResult, messagesResult] = await Promise.all([
+    auditQuery.order('sent_at', { ascending: false }).range(offset, offset + limit - 1),
+    messagesQuery.order('sent_at', { ascending: false }).range(offset, offset + limit - 1)
+  ]);
+
+  if (auditResult.error) throw auditResult.error;
+  if (messagesResult.error) throw messagesResult.error;
+
+  const auditRecords = (auditResult.data || []).map(record => ({
+    id: record.id,
+    type: 'campaign',
+    recipient: record.user ? `${record.user.first_name} ${record.user.last_name}` : 'Unknown',
+    recipientPhone: record.phone_number,
+    recipientEmail: record.user?.email,
+    sentBy: record.sender ? `${record.sender.first_name} ${record.sender.last_name}` : 'System',
+    sentAt: record.sent_at,
+    messageBody: record.message_body,
+    template: record.template_used,
+    status: record.twilio_status,
+    twilioSid: record.twilio_message_sid,
+    errorCode: record.error_code,
+    errorMessage: record.error_message,
+    batchId: record.batch_id,
+    direction: 'outbound'
+  }));
+
+  const messageRecords = (messagesResult.data || []).map(record => ({
+    id: record.id,
+    type: 'conversation',
+    recipient: record.conversation?.customer
+      ? `${record.conversation.customer.first_name} ${record.conversation.customer.last_name}`
+      : 'Unknown',
+    recipientPhone: record.direction === 'outbound' ? record.to_number : record.from_number,
+    recipientEmail: record.conversation?.customer?.email,
+    sentBy: record.direction === 'outbound' ? 'Admin' : 'Customer',
+    sentAt: record.sent_at,
+    messageBody: record.body,
+    template: null,
+    status: record.status,
+    twilioSid: record.twilio_message_sid,
+    errorCode: record.error_code,
+    errorMessage: record.error_message,
+    batchId: null,
+    direction: record.direction
+  }));
+
+  const allRecords = [...auditRecords, ...messageRecords]
+    .sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt))
+    .slice(0, limit);
+
+  const totalCount = (auditResult.count || 0) + (messagesResult.count || 0);
+
+  return {
+    records: allRecords,
+    total: totalCount,
+    page,
+    limit,
+    totalPages: Math.ceil(totalCount / limit)
+  };
+}
+
+export async function getOptOutHistory() {
+  const { data, error } = await supabase
+    .from('sms_opt_outs')
+    .select('*')
+    .order('opted_out_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getAuditStatistics() {
+  const { data: totalSent, error: sentError } = await supabase
+    .from('sms_message_audit')
+    .select('id', { count: 'exact', head: true });
+
+  const { data: totalDelivered, error: deliveredError } = await supabase
+    .from('sms_message_audit')
+    .select('id', { count: 'exact', head: true })
+    .eq('twilio_status', 'delivered');
+
+  const { data: totalFailed, error: failedError } = await supabase
+    .from('sms_message_audit')
+    .select('id', { count: 'exact', head: true })
+    .eq('twilio_status', 'failed');
+
+  const { data: totalOptedOut, error: optedOutError } = await supabase
+    .from('sms_opt_outs')
+    .select('id', { count: 'exact', head: true });
+
+  const { data: conversations } = await supabase
+    .from('sms_messages')
+    .select('id', { count: 'exact', head: true });
+
+  if (sentError || deliveredError || failedError || optedOutError) {
+    throw sentError || deliveredError || failedError || optedOutError;
+  }
+
+  return {
+    totalSent: totalSent || 0,
+    totalDelivered: totalDelivered || 0,
+    totalFailed: totalFailed || 0,
+    totalOptedOut: totalOptedOut || 0,
+    totalConversations: conversations || 0,
+    deliveryRate: totalSent > 0 ? ((totalDelivered / totalSent) * 100).toFixed(1) : 0
+  };
+}
+
+export function exportAuditToCSV(records) {
+  const headers = [
+    'Date/Time',
+    'Type',
+    'Direction',
+    'Recipient Name',
+    'Phone Number',
+    'Email',
+    'Message Body',
+    'Status',
+    'Sent By',
+    'Twilio SID',
+    'Error Code',
+    'Error Message',
+    'Batch ID'
+  ];
+
+  const rows = records.map(record => [
+    new Date(record.sentAt).toLocaleString(),
+    record.type,
+    record.direction,
+    record.recipient,
+    record.recipientPhone,
+    record.recipientEmail || 'N/A',
+    record.messageBody,
+    record.status,
+    record.sentBy,
+    record.twilioSid || 'N/A',
+    record.errorCode || 'N/A',
+    record.errorMessage || 'N/A',
+    record.batchId || 'N/A'
+  ]);
+
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+  ].join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', `sms-audit-log-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
