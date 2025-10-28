@@ -337,3 +337,71 @@ export function subscribeToMessages(conversationId, callback) {
 
   return channel;
 }
+
+export async function pollMessageStatus(limit = 100) {
+  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/poll-message-status?limit=${limit}`;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Authentication required');
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to poll message status');
+  }
+
+  return result;
+}
+
+export async function checkMessageStatus({ sid, messageId, batchId }) {
+  if (!sid && !messageId && !batchId) {
+    throw new Error('One of sid, messageId, or batchId is required');
+  }
+
+  const params = new URLSearchParams();
+  if (sid) params.append('sid', sid);
+  if (messageId) params.append('messageId', messageId);
+  if (batchId) params.append('batchId', batchId);
+
+  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-message-status?${params.toString()}`;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Authentication required');
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to check message status');
+  }
+
+  return result;
+}
+
+export async function getBatchStatusBreakdown(batchId) {
+  const { data, error } = await supabase.rpc('get_batch_status_breakdown', {
+    p_batch_id: batchId
+  });
+
+  if (error) throw error;
+  return data || [];
+}
