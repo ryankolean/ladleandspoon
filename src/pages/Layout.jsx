@@ -210,13 +210,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Admin view - only accessible to logged-in admin users
-  // Redirect non-admins to customer view
-  if (!isAdmin) {
-    navigate('/');
-    return null;
-  }
-
+  // Admin view - accessible when user is logged in
+  // The AdminOnly wrapper in the routes handles access control
   return (
     <SessionProvider>
       <SidebarProvider>
