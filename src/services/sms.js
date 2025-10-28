@@ -75,6 +75,115 @@ export async function markConversationAsRead(conversationId) {
   if (error) throw error;
 }
 
+export async function replyToConversation({ conversationId, body }) {
+  const { data: conversation, error: convError } = await supabase
+    .from('sms_conversations')
+    .select('customer_phone, customer_id')
+    .eq('id', conversationId)
+    .single();
+
+  if (convError) throw convError;
+  if (!conversation) throw new Error('Conversation not found');
+
+  const result = await sendSMS({
+    to: conversation.customer_phone,
+    body: body
+  });
+
+  return result;
+}
+
+export async function getConversationWithMessages(conversationId) {
+  const { data: conversation, error: convError } = await supabase
+    .from('sms_conversations')
+    .select(`
+      *,
+      customer:profiles!sms_conversations_customer_id_fkey(
+        id,
+        first_name,
+        last_name,
+        phone,
+        email
+      )
+    `)
+    .eq('id', conversationId)
+    .single();
+
+  if (convError) throw convError;
+
+  const { data: messages, error: msgError } = await supabase
+    .from('sms_messages')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('sent_at', { ascending: true });
+
+  if (msgError) throw msgError;
+
+  return {
+    ...conversation,
+    messages: messages || []
+  };
+}
+
+export async function archiveConversation(conversationId) {
+  const { error } = await supabase
+    .from('sms_conversations')
+    .update({ status: 'archived' })
+    .eq('id', conversationId);
+
+  if (error) throw error;
+}
+
+export async function unarchiveConversation(conversationId) {
+  const { error } = await supabase
+    .from('sms_conversations')
+    .update({ status: 'active' })
+    .eq('id', conversationId);
+
+  if (error) throw error;
+}
+
+export async function getArchivedConversations() {
+  const { data, error } = await supabase
+    .from('sms_conversations')
+    .select(`
+      *,
+      customer:profiles!sms_conversations_customer_id_fkey(
+        id,
+        first_name,
+        last_name,
+        phone
+      )
+    `)
+    .eq('status', 'archived')
+    .order('last_message_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getConversationStats() {
+  const { data: activeCount, error: activeError } = await supabase
+    .from('sms_conversations')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'active');
+
+  const { data: unreadCount, error: unreadError } = await supabase
+    .from('sms_conversations')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'active')
+    .gt('unread_count', 0);
+
+  if (activeError || unreadError) {
+    throw activeError || unreadError;
+  }
+
+  return {
+    totalActive: activeCount || 0,
+    totalUnread: unreadCount || 0
+  };
+}
+
 export async function getAuthorizedPhoneNumbers() {
   const { data, error } = await supabase
     .from('authorized_phone_numbers')
