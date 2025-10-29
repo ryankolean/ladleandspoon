@@ -67,11 +67,6 @@ const navigationItems = [
     icon: MessageSquare,
   },
   {
-    title: "SMS Audit Log",
-    url: createPageUrl("SMSAudit"),
-    icon: FileText,
-  },
-  {
     title: "Ordering Settings",
     url: createPageUrl("OrderingSettings"),
     icon: Settings,
