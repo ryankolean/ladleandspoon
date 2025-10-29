@@ -86,6 +86,7 @@ const navigationItems = [
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -94,6 +95,7 @@ export default function Layout({ children, currentPageName }) {
     const checkAuth = async () => {
       try {
         const user = await User.me();
+        setCurrentUser(user);
 
         if (user) {
           try {
@@ -110,6 +112,7 @@ export default function Layout({ children, currentPageName }) {
         }
       } catch (error) {
         console.error('Auth check failed:', error);
+        setCurrentUser(null);
         setIsAdmin(false);
       } finally {
         setIsCheckingAuth(false);
