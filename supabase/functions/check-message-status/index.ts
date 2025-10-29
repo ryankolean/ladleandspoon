@@ -32,9 +32,10 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-    const twilioAuthToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const twilioApiKeySid = Deno.env.get("TWILIO_API_KEY_SID");
+    const twilioApiKeySecret = Deno.env.get("TWILIO_API_KEY_SECRET");
 
-    if (!twilioAccountSid || !twilioAuthToken) {
+    if (!twilioAccountSid || !twilioApiKeySid || !twilioApiKeySecret) {
       throw new Error("Twilio credentials not configured");
     }
 
@@ -196,7 +197,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const credentials = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const credentials = btoa(`${twilioApiKeySid}:${twilioApiKeySecret}`);
     const statuses = [];
 
     for (const message of messagesToCheck) {

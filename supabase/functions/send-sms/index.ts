@@ -24,10 +24,11 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
-    const twilioAuthToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const twilioApiKeySid = Deno.env.get("TWILIO_API_KEY_SID");
+    const twilioApiKeySecret = Deno.env.get("TWILIO_API_KEY_SECRET");
     const twilioMessagingServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
 
-    if (!twilioAccountSid || !twilioAuthToken || !twilioMessagingServiceSid) {
+    if (!twilioAccountSid || !twilioApiKeySid || !twilioApiKeySecret || !twilioMessagingServiceSid) {
       throw new Error("Twilio credentials not configured");
     }
 
@@ -151,7 +152,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-    const credentials = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const credentials = btoa(`${twilioApiKeySid}:${twilioApiKeySecret}`);
 
     const formData = new URLSearchParams();
     formData.append("To", to);
