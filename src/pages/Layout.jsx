@@ -163,7 +163,20 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Admin layout - always render admin interface
+  // Wait for admin check to complete before rendering admin interface
+  // The AdminOnly wrapper handles redirects, we just need to not render until ready
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center">
+        <div className="text-center">
+          <Coffee className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin layout - render admin interface for verified admins
   // Access control is handled by AdminOnly wrapper in routes
   return (
     <SessionProvider>
