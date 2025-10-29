@@ -35,9 +35,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import ViewToggle from "@/components/ViewToggle";
-import CustomerOrder from "@/pages/CustomerOrder";
-
 const navigationItems = [
   {
     title: "Dashboard",
@@ -89,8 +86,6 @@ const navigationItems = [
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState("customer");
-  const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -99,7 +94,6 @@ export default function Layout({ children, currentPageName }) {
     const checkAuth = async () => {
       try {
         const user = await User.me();
-        setCurrentUser(user);
 
         if (user) {
           try {
@@ -113,17 +107,9 @@ export default function Layout({ children, currentPageName }) {
             console.error('Admin check failed:', adminError);
             setIsAdmin(false);
           }
-
-          const path = window.location.pathname;
-          if (path !== '/' && path !== '/order') {
-            setCurrentView("admin");
-          } else {
-            setCurrentView("customer");
-          }
         }
       } catch (error) {
         console.error('Auth check failed:', error);
-        setCurrentUser(null);
         setIsAdmin(false);
       } finally {
         setIsCheckingAuth(false);
@@ -154,15 +140,6 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const handleViewChange = (newView) => {
-    setCurrentView(newView);
-    if (newView === "admin") {
-      navigate(createPageUrl("Dashboard"));
-    } else {
-      navigate("/");
-    }
-  };
-
   const handleLogout = async () => {
     try {
       sessionManager.stopActivityMonitoring();
@@ -186,32 +163,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If user is not logged in or customer view is selected, show customer ordering interface
-  if (!currentUser || currentView === "customer") {
-    return (
-      <div className="min-h-screen relative">
-        {/* Top right controls */}
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
-          {isAdmin && (
-            <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
-          )}
-          {currentUser && (
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 text-sm font-medium text-red-600 hover:bg-red-50 border border-red-200"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Sign Out</span>
-            </button>
-          )}
-        </div>
-        <CustomerOrder />
-      </div>
-    );
-  }
-
-  // Admin view - accessible when user is logged in
-  // The AdminOnly wrapper in the routes handles access control
+  // Admin layout - always render admin interface
+  // Access control is handled by AdminOnly wrapper in routes
   return (
     <SessionProvider>
       <SidebarProvider>
