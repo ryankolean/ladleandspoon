@@ -262,13 +262,9 @@ export default function Layout({ children, currentPageName }) {
 
         <main className="flex-1 flex flex-col">
           <header className="bg-white/90 backdrop-blur-sm border-b border-orange-100 px-6 py-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger className="hover:bg-orange-50 p-2 rounded-lg transition-colors duration-200 md:hidden" />
-                <h1 className="text-xl font-bold text-gray-900 hidden md:block">Ladle & Spoon POS</h1>
-              </div>
-
-              <ViewToggle currentView={currentView} onViewChange={handleViewChange} />
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="hover:bg-orange-50 p-2 rounded-lg transition-colors duration-200 md:hidden" />
+              <h1 className="text-xl font-bold text-gray-900">Ladle & Spoon POS</h1>
             </div>
           </header>
 
