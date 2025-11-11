@@ -6,8 +6,6 @@ export function createPageUrl(pageName) {
     'DeliveryRoute': '/deliveryroute',
     'Reports': '/reports',
     'OrderingSettings': '/settings',
-    'SMSPanel': '/smspanel',
-    'SMSManagement': '/sms',
     'CustomerOrder': '/',
     'Profile': '/profile',
     'CustomerSettings': '/customer-settings'

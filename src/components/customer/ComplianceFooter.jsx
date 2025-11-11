@@ -27,12 +27,6 @@ export function ComplianceFooter() {
             <h3 className="font-bold text-lg mb-3">Quick Links</h3>
             <div className="space-y-2">
               <Link
-                to="/sms-opt-in"
-                className="block text-sm text-white/80 hover:text-white transition-colors"
-              >
-                Subscribe to SMS Updates
-              </Link>
-              <Link
                 to="/order"
                 className="block text-sm text-white/80 hover:text-white transition-colors"
               >
@@ -68,28 +62,7 @@ export function ComplianceFooter() {
               >
                 Privacy Policy
               </Link>
-              <span className="text-white/40">|</span>
-              <Link
-                to="/sms-terms"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                SMS Terms
-              </Link>
-              <span className="text-white/40">|</span>
-              <Link
-                to="/sms-opt-in"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                SMS Opt-In
-              </Link>
             </div>
-          </div>
-
-          <div className="mt-4 text-xs text-white/60 text-center">
-            <p>
-              By using our SMS service, you agree to receive recurring automated marketing and
-              transactional text messages. Message and data rates may apply. Reply STOP to opt out.
-            </p>
           </div>
         </div>
       </div>

@@ -85,11 +85,6 @@ export default function PrivacyPolicy() {
                 <li>You can opt out at any time by texting STOP to any message</li>
                 <li>Message and data rates may apply based on your carrier plan</li>
               </ul>
-              <p className="mt-2">
-                <Link to="/sms-terms" className="text-[#8B4513] underline hover:text-[#A0522D]">
-                  View our SMS Terms of Service
-                </Link>
-              </p>
             </section>
 
             <section>

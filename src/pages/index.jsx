@@ -28,9 +28,6 @@ import ResetPassword from "./ResetPassword";
 
 import UserManagement from "./UserManagement";
 
-import SMSPanel from "./SMSPanel";
-
-import SMSAudit from "./SMSAudit";
 
 import CustomerHome from "./CustomerHome";
 
@@ -42,11 +39,7 @@ import OrderSuccess from "./OrderSuccess";
 
 import MyOrders from "./MyOrders";
 
-import SMSTerms from "./SMSTerms";
-
 import PrivacyPolicy from "./PrivacyPolicy";
-
-import SMSOptIn from "./SMSOptIn";
 
 import TermsAndConditions from "./TermsAndConditions";
 
@@ -82,9 +75,6 @@ const PAGES = {
 
     UserManagement: UserManagement,
 
-    SMSPanel: SMSPanel,
-
-    SMSAudit: SMSAudit,
 
 }
 
@@ -117,15 +107,13 @@ function PagesContent() {
         return <ResetPassword />;
     }
 
-    const isCompliancePage = location.pathname === '/sms-terms' || location.pathname === '/privacy-policy' || location.pathname === '/sms-opt-in' || location.pathname === '/terms';
+    const isCompliancePage = location.pathname === '/privacy-policy' || location.pathname === '/terms';
 
     if (isCompliancePage) {
         return (
             <div className="flex flex-col min-h-screen">
                 <Routes>
-                    <Route path="/sms-terms" element={<SMSTerms />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/sms-opt-in" element={<SMSOptIn />} />
                     <Route path="/terms" element={<TermsAndConditions />} />
                 </Routes>
                 <ComplianceFooter />
@@ -163,8 +151,6 @@ function PagesContent() {
                     <Route path="/deliveryroute" element={<DeliveryRoute />} />
                     <Route path="/menu" element={<Menu />} />
                     <Route path="/reports" element={<Reports />} />
-                    <Route path="/smspanel" element={<SMSPanel />} />
-                    <Route path="/smsaudit" element={<SMSAudit />} />
                     <Route path="/settings" element={<OrderingSettings />} />
                     <Route path="/customer-settings" element={<CustomerSettings />} />
                     <Route path="/profile" element={<Profile />} />

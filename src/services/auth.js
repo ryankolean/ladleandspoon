@@ -184,18 +184,11 @@ export const User = {
       'full_name',
       'phone',
       'role',
-      'preferences',
-      'sms_consent',
-      'sms_consent_date',
-      'sms_consent_method',
-      'sms_consent_ip'
+      'preferences'
     ];
     profileFields.forEach(field => {
       if (updates[field] !== undefined) {
         let value = updates[field];
-        if (field === 'sms_consent_date' && value === '') {
-          value = null;
-        }
         if (value !== undefined && value !== null && typeof value === 'string') {
           value = value.trim();
         }

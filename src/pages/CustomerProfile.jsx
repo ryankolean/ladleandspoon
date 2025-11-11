@@ -15,8 +15,7 @@ export default function CustomerProfile() {
     first_name: '',
     last_name: '',
     email: '',
-    phone: '',
-    sms_consent: false
+    phone: ''
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,8 +38,7 @@ export default function CustomerProfile() {
         first_name: user.first_name || '',
         last_name: user.last_name || '',
         email: user.email || '',
-        phone: user.phone || '',
-        sms_consent: user.sms_consent || false
+        phone: user.phone || ''
       });
     } catch (error) {
       console.error("Error loading user data:", error);
@@ -64,10 +62,7 @@ export default function CustomerProfile() {
       await User.updateMyUserData({
         first_name: userData.first_name,
         last_name: userData.last_name,
-        phone: userData.phone,
-        sms_consent: userData.sms_consent,
-        sms_consent_method: 'profile_update',
-        sms_consent_date: userData.sms_consent ? new Date().toISOString() : null
+        phone: userData.phone
       });
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
@@ -201,45 +196,6 @@ export default function CustomerProfile() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-xl rounded-3xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-[#E6B85C] to-[#FEC37D] text-white">
-              <CardTitle className="flex items-center gap-3 text-2xl">
-                <MessageSquare className="w-6 h-6" />
-                Communication Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="bg-[#FFF8E1] border-2 border-[#E6B85C]/30 rounded-2xl p-6">
-                <div className="flex items-start gap-4">
-                  <Checkbox
-                    id="sms_consent"
-                    checked={userData.sms_consent}
-                    onCheckedChange={(checked) => setUserData(prev => ({ ...prev, sms_consent: checked }))}
-                    className="mt-1 h-6 w-6 border-2 border-[#8B4513]"
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="sms_consent" className="text-base font-semibold text-[#654321] cursor-pointer block mb-2">
-                      Receive SMS notifications for order updates and special offers
-                    </label>
-                    <p className="text-sm text-[#8B4513]/70 mb-3">
-                      Stay informed about your orders, delivery updates, and exclusive promotions sent directly to your phone.
-                    </p>
-                    <p className="text-xs text-[#8B4513]/60">
-                      Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time.
-                      View our{' '}
-                      <Link to="/sms-terms" className="underline hover:text-[#F56949] font-medium" target="_blank">
-                        SMS Terms
-                      </Link>{' '}
-                      and{' '}
-                      <Link to="/privacy-policy" className="underline hover:text-[#F56949] font-medium" target="_blank">
-                        Privacy Policy
-                      </Link>.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           <div className="flex justify-center pt-4">
             <Button
