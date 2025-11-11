@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/services';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Users, Shield, UserX, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Users, Shield, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import AdminOnly from '@/components/auth/AdminOnly';
 import { format } from 'date-fns';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -31,29 +28,6 @@ export default function UserManagement() {
       setError('Failed to load users. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleToggleAdminRole = async (userId, currentRole) => {
-    try {
-      setActionLoading(userId);
-      setError(null);
-      setSuccess(null);
-
-      if (currentRole === 'admin') {
-        await User.revokeAdminRole(userId);
-        setSuccess('Admin role revoked successfully');
-      } else {
-        await User.grantAdminRole(userId);
-        setSuccess('Admin role granted successfully');
-      }
-
-      await fetchUsers();
-    } catch (err) {
-      console.error('Error updating user role:', err);
-      setError(err.message || 'Failed to update user role. Please try again.');
-    } finally {
-      setActionLoading(null);
     }
   };
 
@@ -82,13 +56,6 @@ export default function UserManagement() {
             </Alert>
           )}
 
-          {success && (
-            <Alert className="mb-6 border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">{success}</AlertDescription>
-            </Alert>
-          )}
-
           <Card className="shadow-xl border-orange-100">
             <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50">
               <CardTitle className="flex items-center gap-2">
@@ -96,7 +63,7 @@ export default function UserManagement() {
                 All Users
               </CardTitle>
               <CardDescription>
-                View and manage user roles. Admins have full access to the admin dashboard.
+                View all registered users and their current roles.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -118,7 +85,6 @@ export default function UserManagement() {
                         <TableHead className="font-semibold">Name</TableHead>
                         <TableHead className="font-semibold">Role</TableHead>
                         <TableHead className="font-semibold">Joined</TableHead>
-                        <TableHead className="font-semibold text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -141,32 +107,6 @@ export default function UserManagement() {
                           <TableCell className="text-gray-600">
                             {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : '-'}
                           </TableCell>
-                          <TableCell className="text-right">
-                            {actionLoading === user.user_id ? (
-                              <Button size="sm" disabled className="bg-gray-100">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              </Button>
-                            ) : user.role === 'admin' ? (
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleToggleAdminRole(user.user_id, user.role)}
-                                className="bg-red-600 hover:bg-red-700"
-                              >
-                                <UserX className="w-4 h-4 mr-1" />
-                                Revoke Admin
-                              </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                onClick={() => handleToggleAdminRole(user.user_id, user.role)}
-                                className="bg-blue-600 hover:bg-blue-700"
-                              >
-                                <Shield className="w-4 h-4 mr-1" />
-                                Make Admin
-                              </Button>
-                            )}
-                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -176,14 +116,6 @@ export default function UserManagement() {
             </CardContent>
           </Card>
 
-          <div className="mt-6">
-            <Alert className="border-orange-200 bg-orange-50">
-              <AlertCircle className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800">
-                <strong>Important:</strong> Admin users have full access to manage orders, menu items, reports, and other users. Only grant admin access to trusted individuals.
-              </AlertDescription>
-            </Alert>
-          </div>
         </div>
       </div>
     </AdminOnly>
