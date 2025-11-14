@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
-import { User } from '@/services';
-import { ArrowLeft, CreditCard, Wallet, AlertCircle } from 'lucide-react';
+import { User, DeliverySettings } from '@/services';
+import { ArrowLeft, CreditCard, Wallet, AlertCircle, Truck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import AddressAutocomplete from '@/components/customer/AddressAutocomplete';
 
@@ -22,6 +22,8 @@ export default function Checkout() {
   const [phoneError, setPhoneError] = useState('');
   const [showVenmoConfirmation, setShowVenmoConfirmation] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState(null);
+  const [deliverySettings, setDeliverySettings] = useState(null);
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   const STORE_ADDRESS = "1247 Bielby Waterford, MI 48328";
   const MAX_DELIVERY_DISTANCE_MILES = 10;
@@ -68,6 +70,7 @@ export default function Checkout() {
 
   useEffect(() => {
     checkAuth();
+    loadDeliverySettings();
   }, []);
 
   useEffect(() => {
@@ -77,6 +80,18 @@ export default function Checkout() {
       setDeliveryDistance(null);
     }
   }, [deliveryAddress, calculateDistance]);
+
+  const loadDeliverySettings = async () => {
+    try {
+      const settings = await DeliverySettings.getSettings();
+      setDeliverySettings(settings);
+      const fee = DeliverySettings.calculateDeliveryFee(settings);
+      setDeliveryFee(fee);
+    } catch (error) {
+      console.error('Error loading delivery settings:', error);
+      setDeliveryFee(5.00);
+    }
+  };
 
   const checkAuth = async () => {
     try {
@@ -159,6 +174,9 @@ export default function Checkout() {
         variant: item.variant?.name || null
       }));
 
+      const subtotal = getCartTotal();
+      const totalWithDelivery = subtotal + deliveryFee;
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -168,7 +186,7 @@ export default function Checkout() {
           customer_email: user.email,
           customer_address: deliveryAddress.formatted_address,
           items: orderItems,
-          total_amount: getCartTotal(),
+          total_amount: totalWithDelivery,
           status: paymentMethod === 'venmo' ? 'pending_payment' : 'pending',
           payment_method: paymentMethod,
           notes: deliveryNotes
@@ -224,14 +242,14 @@ export default function Checkout() {
 
           <div className="bg-[#FFF8F0] p-6 rounded-2xl border-2 border-[#DEB887]">
             <p className="text-lg font-semibold text-[#8B4513] mb-2">Order Total</p>
-            <p className="text-4xl font-bold text-[#F56949]">${getCartTotal().toFixed(2)}</p>
+            <p className="text-4xl font-bold text-[#F56949]">${(getCartTotal() + deliveryFee).toFixed(2)}</p>
           </div>
 
           <div className="space-y-4 text-left bg-[#FFF8F0] p-6 rounded-2xl border-2 border-[#DEB887]">
             <p className="text-[#654321] font-medium">To complete your order:</p>
             <ol className="list-decimal list-inside space-y-2 text-[#654321]">
               <li>Click the button below to open Venmo</li>
-              <li>Complete the payment of <strong>${getCartTotal().toFixed(2)}</strong></li>
+              <li>Complete the payment of <strong>${(getCartTotal() + deliveryFee).toFixed(2)}</strong></li>
               <li>Return here and click "I've Completed Payment"</li>
             </ol>
           </div>
@@ -242,7 +260,7 @@ export default function Checkout() {
             rel="noopener noreferrer"
             className="btn-primary w-full inline-block text-center"
           >
-            Open Venmo to Pay ${getCartTotal().toFixed(2)}
+            Open Venmo to Pay ${(getCartTotal() + deliveryFee).toFixed(2)}
           </a>
 
           <button
@@ -441,11 +459,25 @@ export default function Checkout() {
                 ))}
               </div>
 
+              <div className="border-t-2 border-[#DEB887] pt-4 space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#654321]">Subtotal</span>
+                  <span className="font-medium text-[#8B4513]">${getCartTotal().toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#654321] flex items-center gap-1">
+                    <Truck className="w-4 h-4" />
+                    Delivery Fee
+                  </span>
+                  <span className="font-medium text-[#8B4513]">${deliveryFee.toFixed(2)}</span>
+                </div>
+              </div>
+
               <div className="border-t-2 border-[#DEB887] pt-4 mb-6">
                 <div className="flex justify-between items-center">
                   <span className="text-xl font-bold text-[#8B4513]">Total</span>
                   <span className="text-3xl font-bold text-[#F56949]">
-                    ${getCartTotal().toFixed(2)}
+                    ${(getCartTotal() + deliveryFee).toFixed(2)}
                   </span>
                 </div>
               </div>

@@ -4,3 +4,4 @@ export { UserAddress } from './userAddresses';
 export { OrderingWindow } from './orderingWindows';
 export { TaxSettings } from './taxSettings';
 export { User } from './auth';
+export { DeliverySettings } from './deliverySettings';

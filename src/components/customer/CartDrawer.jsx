@@ -1,11 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
-import { X, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, ArrowRight, Truck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DeliverySettings } from '@/services';
 
 export default function CartDrawer() {
   const { cart, updateQuantity, removeFromCart, getCartTotal, getCartCount, isCartOpen, setIsCartOpen } = useCart();
   const navigate = useNavigate();
+  const [deliveryFee, setDeliveryFee] = useState(0);
+
+  useEffect(() => {
+    loadDeliveryFee();
+  }, []);
 
   useEffect(() => {
     if (isCartOpen) {
@@ -17,6 +23,17 @@ export default function CartDrawer() {
       document.body.style.overflow = 'unset';
     };
   }, [isCartOpen]);
+
+  const loadDeliveryFee = async () => {
+    try {
+      const settings = await DeliverySettings.getSettings();
+      const fee = DeliverySettings.calculateDeliveryFee(settings);
+      setDeliveryFee(fee);
+    } catch (error) {
+      console.error('Error loading delivery fee:', error);
+      setDeliveryFee(5.00);
+    }
+  };
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -113,10 +130,23 @@ export default function CartDrawer() {
 
         {cart.length > 0 && (
           <div className="border-t-2 border-[#DEB887] p-6 bg-[#F8F3F0]">
-            <div className="flex justify-between items-center mb-6">
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-[#654321]">Subtotal</span>
+                <span className="font-medium text-[#8B4513]">${getCartTotal().toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-[#654321] flex items-center gap-1">
+                  <Truck className="w-4 h-4" />
+                  Delivery Fee
+                </span>
+                <span className="font-medium text-[#8B4513]">${deliveryFee.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center mb-6 pt-3 border-t border-[#DEB887]">
               <span className="text-xl font-bold text-[#8B4513]">Total</span>
               <span className="text-3xl font-bold text-[#F56949]">
-                ${getCartTotal().toFixed(2)}
+                ${(getCartTotal() + deliveryFee).toFixed(2)}
               </span>
             </div>
             <button
